@@ -1,6 +1,6 @@
 #include "singlaHashing.h"
 
-int main()
+int main(void)
 {
 	printf("Start...\n");
 	enterAndHashPassword();

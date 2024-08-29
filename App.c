@@ -4,7 +4,7 @@
 #include "pages/login.h"
 #include "pages/signup.h"
 
-int main()
+int main(void)
 {
     printf("Hello World\n");
 

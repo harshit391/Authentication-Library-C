@@ -62,67 +62,73 @@ void decode(char digest[])
 void encode(char password[], char hash[])
 {
 	int n = strlen(password);
-
-	int key = 0;
+	
+	int key = 0; // User Public Key
 
 	int j = 0;
 
-	char digest[1000];
+	char digest[1000]; // Creating a Basic Encoded Digest
 
+	/* Entire Singla Hashing Algo */
 	for (int i = 0; i < n; i++)
 	{
-		int sum = password[i] + secret[i % 7]  + arr2[i % 7];
+		int sum = password[i] + secret[i % 7]  + arr2[i % 7]; // Summing up the values of password , secret 1 , secret 2
 
-		int half = sum / 2;
+		int half = sum / 2; // Taking Half of the value
 
 		if (sum % 2 == 1)
 		{
-			key |= (1 << j);
+			key |= (1 << j); // Calculating the User key where we have to add 1 while decoding
 		}
 
-		int diff = (half - 65);
+		int diff = (half - 65); // Subtracting Value of 'A' to fit in the curr Lookup Array
 
-		int asci = sc[diff];
+		int asci = sc[diff]; // Extracing Encoded Character from Lookup 'sc'
 
-		digest[j] = (char)(asci);
+		digest[j] = (char)(asci); // Storing Encoded Value in Digest
 
 		j++;	
 	}
 
 	digest[j] = '\0';
 
-	char start[] = "$";
+	// Some Extra Strings to Add in Encoded value for fun
+	char start[] = "$"; 
 
 	char owner[] = "$singla391$";
 
 	char padding[12];
 
+	// Converting key to string
 	sprintf(padding, "%d", key);
 	
+	// Creating the Hased Password
 	strcat(hash, owner);
 	strcat(hash, padding);
 	strcat(hash, start);
 	strcat(hash, digest);
 }
 
+/* Main Function to Enter Password and Create a Hash Of it  */
 void enterAndHashPassword()
 {
-	char arr3[1000];
+	
+	char input_pass[1000]; // Main Input Password
 
 	printf("Enter Your Password :- ");
 
-	scanf("%[^\n]%*c", arr3);
+	scanf("%[^\n]%*c", input_pass);
 
-	while (strlen(arr3) > 30)
+	while (strlen(input_pass) > 30)
 	{
 		printf("\n");
 		printf("Please Enter Password of length less than equal to 30\n");
-		scanf("%[^\n]%*c", arr3);
+		scanf("%[^\n]%*c", input_pass);
 	}
 		
-	char hash[1000];
+	char hash[1000]; // Main Output Hashed Value
 
 	encode(arr3, hash);
 
-	printf("Encoded Value :- %s\n", hash);
+	printf("Encoded Value :- %s\n", hash); // Printing the Encrypted Hashed Password
 }

@@ -1,3 +1,4 @@
-gcc -o main Main.c -lssl -lcrypto
-./main
-rm main
+gcc ./App.c
+./a.out
+rm -rf ./a.out
+
