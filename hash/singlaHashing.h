@@ -128,7 +128,7 @@ void enterAndHashPassword()
 		
 	char hash[1000]; // Main Output Hashed Value
 
-	encode(hash, hash);
+	encode(input_pass, hash);
 
 	printf("Encoded Value :- %s\n", hash); // Printing the Encrypted Hashed Password
 }
