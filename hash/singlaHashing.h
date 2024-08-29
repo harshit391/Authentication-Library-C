@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <sys/time.h>
 
 /* Lookup  */
 int sc[] = {94, 99, 47, 103, 72, 121, 36, 123, 93, 98, 115, 41, 106, 111, 113, 75, 40, 60, 71, 124, 62, 107, 64, 45, 43, 96, 118, 95, 34, 112, 69, 74, 70, 67, 120, 68, 73, 117, 59, 33, 125, 42, 37, 108, 102, 92, 39, 105, 63, 110, 58, 38, 91, 35, 46, 104, 126, 116, 97, 100, 114, 61, 44, 65, 119, 66, 122, 101, 109};
@@ -37,7 +39,7 @@ void decode(char digest[])
 
 	int j = 0; // Let's start Decoding
 
-	char decoded[1000]; // Storing Decoding Value here
+	char decoded[100]; // Storing Decoding Value here
 
 	for (int i = keys + 1; i < n; i++)
 	{
@@ -63,11 +65,13 @@ void encode(char password[], char hash[])
 {
 	int n = strlen(password);
 	
+	printf("%s\n", hash);
+
 	int key = 0; // User Public Key
 
 	int j = 0;
 
-	char digest[1000]; // Creating a Basic Encoded Digest
+	char digest[100]; // Creating a Basic Encoded Digest
 
 	/* Entire Singla Hashing Algo */
 	for (int i = 0; i < n; i++)
@@ -101,19 +105,24 @@ void encode(char password[], char hash[])
 
 	// Converting key to string
 	sprintf(padding, "%d", key);
+
+	int totalLen = n + strlen(padding) + strlen(owner) + 1;
 	
 	// Creating the Hased Password
 	strcat(hash, owner);
 	strcat(hash, padding);
 	strcat(hash, start);
 	strcat(hash, digest);
+
+	hash[totalLen] = '\0';
 }
 
 /* Main Function to Enter Password and Create a Hash Of it  */
 void enterAndHashPassword()
 {
-	
-	char input_pass[1000]; // Main Input Password
+	srand(time(NULL));
+
+	char input_pass[100]; // Main Input Password
 
 	printf("Enter Your Password :- ");
 
@@ -125,11 +134,24 @@ void enterAndHashPassword()
 		printf("Please Enter Password of length less than equal to 30\n");
 		scanf("%[^\n]%*c", input_pass);
 	}
-		
-	char hash[1000]; // Main Output Hashed Value
+	
+	struct timeval before, after;
+
+	gettimeofday(&before, NULL);
+
+	long long before_mil = before.tv_sec * 1000LL + before.tv_usec / 1000;
+	
+	char hash[100];
+
+	hash[0] = '\0';
 
 	encode(input_pass, hash);
 
 	printf("Encoded Value :- %s\n", hash); // Printing the Encrypted Hashed Password
-}
 
+	gettimeofday(&after, NULL);
+
+	long long after_mil = after.tv_sec * 1000LL + after.tv_usec / 1000;
+
+	printf("Time Taken :- %llu ms\n", after_mil - before_mil);
+}
