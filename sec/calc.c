@@ -35,65 +35,92 @@ void decode(char digest[])
 	}
 }
 
+void binary(int n)
+{
+	for (int i = 32; i >= 0; i--) 
+	{
+		printf("%d", (n >> i)&1);
+	} 
+}
+
 int main()
 {
 	char arr3[1000];
 
+	printf("Enter Your Password :- ");
+
 	scanf("%[^\n]%*c", arr3);
 
-	char digest[100];
-
-	char key[100];
-
-	int j = 0;
+	while (strlen(arr3) > 30)
+	{
+		printf("\n");
+		printf("Please Enter Password of length less than equal to 30");
+		scanf("%[^\n]%*c", arr3);
+	}
 
 	int n = strlen(arr3);
 
-	printf("%d\n", n);
+	char *  digest = (char *) malloc(n);
+
+	int key = 0;
+
+	int j = 0;
+
+	// printf("%d\n", n);
 
 	for (int i = 0; i < n; i++)
 	{
-		printf("Hashing :- %c\n", arr3[i]);
+		// printf("Hashing :- %c\n", arr3[i]);
 
 		int sum = arr3[i] + secret[i % 7]  + arr2[i % 7];
 
-		printf("Sum :- %d\n", sum);
+		// printf("Sum :- %d\n", sum);
 
 		int half = sum / 2;
 
-		key[j] = (char)(sum % 2 + '0');
+		if (sum % 2 == 1)
+			key |= (1 << j);
 
-		printf("Half :- %d\n", half);
+		// printf("Half :- %d\n", half);
 
-		printf("Key :- %c\n", key[j]);
+		// printf("Key :- %c\n", sum % 2);
 
 		int diff = (half - 65);
 
-		printf("Diff :- %d\n", diff);
+		// printf("Diff :- %d\n", diff);
 
 		int asci = sc[diff];
 
-		printf("Hashed Character :- %c\n", asci);
+		// printf("Hashed Character :- %c\n", asci);
 
 		digest[j] = (char)(asci);
 
 		j++;
 		
-		printf("------------------\n");
+		// printf("------------------\n");
 	}
-	
-	key[j] = '\0';	
-	digest[j] = '\0';
 
 	char start[] = "$";
 
 	char hash[] = "$singla391$";
 
-//	strcat(hash, key);
-//	strcat(hash, start);
-//	strcat(hash, digest);
+	char padding[12];
+
+	sprintf(padding, "%d", key);
+	
+	strcat(hash, padding);
+	strcat(hash, start);
+	strcat(hash, digest);
+
+	/*
 
 	printf("digest :- %s\n", digest);
+
+	printf("key :- ");
+	binary(key);
+	printf("\n");
+
+	*/
 
 	printf("Hashed Value :- %s\n", hash);
 
