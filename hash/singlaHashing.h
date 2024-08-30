@@ -118,13 +118,13 @@ void encode(char password[], char hash[])
 }
 
 /* Main Function to Enter Password and Create a Hash Of it  */
-void enterAndHashPassword()
+void enterAndHashPassword(char hash[])
 {
 	srand(time(NULL));
 
 	char input_pass[100]; // Main Input Password
 
-	printf("Enter Your Password :- ");
+	printf("Enter Your Password (Length less than or equal to 30):- ");
 
 	scanf("%[^\n]%*c", input_pass);
 
@@ -141,17 +141,15 @@ void enterAndHashPassword()
 
 	long long before_mil = before.tv_sec * 1000LL + before.tv_usec / 1000;
 	
-	char hash[100];
-
 	hash[0] = '\0';
 
 	encode(input_pass, hash);
 
-	printf("Encoded Value :- %s\n", hash); // Printing the Encrypted Hashed Password
+//	printf("Encoded Value :- %s\n", hash); // Printing the Encrypted Hashed Password
 
 	gettimeofday(&after, NULL);
 
 	long long after_mil = after.tv_sec * 1000LL + after.tv_usec / 1000;
 
-	printf("Time Taken :- %llu ms\n", after_mil - before_mil);
+//	printf("Time Taken :- %llu ms\n", after_mil - before_mil);
 }
