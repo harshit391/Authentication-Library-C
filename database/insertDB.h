@@ -2,14 +2,30 @@
 #include <stdio.h>
 #include <bson/bson.h>
 
-void insertDB(char name[], char password[], char email[]) {
+void insertDB(char name[], char password[], char email[]) 
+{
+    // Main Client    
     mongoc_client_t *client;
+    
+    // Collection handle
     mongoc_collection_t *collection;
+    
+    // MongoDB URI
     mongoc_uri_t *uri;
+    
+    // Error handling
     bson_error_t error;
+    
+    // Query and document objects for MongoDB operations 
     bson_t *query, *doc;
+    
+    // Cursor for MongoDB operations like Iterator in Data Structures 
     mongoc_cursor_t *cursor;
+    
+    // Result object for MongoDB operations
     const bson_t *result;
+    
+    // Iterator object for MongoDB operations
     bson_iter_t iter;
 
     // Initialize the MongoDB driver
@@ -20,6 +36,8 @@ void insertDB(char name[], char password[], char email[]) {
 
     // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
+    
+    // Check for errors in URI creation 
     if (!uri) {
         fprintf(stderr, "Failed to parse URI: %s\n", error.message);
         return;
@@ -31,7 +49,10 @@ void insertDB(char name[], char password[], char email[]) {
 
     // Create a new client instance
     client = mongoc_client_new_from_uri(uri);
-    if (!client) {
+    
+    // Check for errors in client creation
+    if (!client) 
+    {
         fprintf(stderr, "Failed to create client\n");
         mongoc_uri_destroy(uri);
         return;
@@ -47,13 +68,21 @@ void insertDB(char name[], char password[], char email[]) {
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
     // Process the result
-    if (mongoc_cursor_next(cursor, &result)) {
-        if (bson_iter_init_find(&iter, result, "password")) {
+    if (mongoc_cursor_next(cursor, &result)) 
+    {
+        // Check if the password field exists in the result document 
+        if (bson_iter_init_find(&iter, result, "password")) 
+        {
             printf("Existing user found.");
-        } else {
+        } 
+        else 
+        {
             printf("Existing user found, but password field not found.\n");
         }
-    } else {
+    } 
+    else 
+    {
+        // No matching document found. Insert a new document
         printf("No matching document found. Inserting new document.\n");
         
         // Create a new document to insert
@@ -64,9 +93,12 @@ void insertDB(char name[], char password[], char email[]) {
         );
 
         // Insert the document
-        if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) {
+        if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
+        {
             fprintf(stderr, "Insert failed: %s\n", error.message);
-        } else {
+        } 
+        else 
+        {
             printf("New document inserted successfully.\n");
         }
 
@@ -74,6 +106,7 @@ void insertDB(char name[], char password[], char email[]) {
         bson_destroy(doc);
     }
 
+    // Clean up
     mongoc_cursor_destroy(cursor);
     bson_destroy(query);
     mongoc_collection_destroy(collection);
