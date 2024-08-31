@@ -4,13 +4,13 @@
 
 void getMongoURI(char uri_string[])
 {
-    int fd = open("mongouri.txt", O_RDONLY);
+    int fd = open("../database/mongouri.txt", O_RDONLY);
 
     if (fd == -1)
     {
         perror("Error");
-	exit(1);
+	    exit(1);
     }
 
-    read(fd, uri_string, 100);
+    read(fd, uri_string, 129);
 }

@@ -33,7 +33,9 @@ void insertDB(char name[], char password[], char email[])
     mongoc_init();
 
     // Connection string from MongoDB Atlas
-    char uri_string[100];
+    char uri_string[130];
+
+    uri_string[129] = '\0';
 
     getMongoURI(uri_string);
 
@@ -86,13 +88,14 @@ void insertDB(char name[], char password[], char email[])
     else 
     {
         // No matching document found. Insert a new document
-        printf("No matching document found. Inserting new document.\n");
+        printf("Inserting new document.\n");
         
         // Create a new document to insert
         doc = BCON_NEW(
             "name", BCON_UTF8(name),
             "email", BCON_UTF8(email),
-            "password", BCON_UTF8(password)
+            "password", BCON_UTF8(password),
+	    "isVerified", BCON_UTF8("false")
         );
 
         // Insert the document

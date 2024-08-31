@@ -123,10 +123,20 @@ void enterAndHashPassword(char hash[])
 	srand(time(NULL));
 
 	char input_pass[100]; // Main Input Password
+	input_pass[0] = '\0';
 
 	printf("Enter Your Password (Length less than or equal to 30):- ");
 
 	scanf("%[^\n]%*c", input_pass);
+
+	if (strlen(input_pass) == 0)
+	{
+		printf("Empty Value Not Allowed\n");
+		return;
+	}
+	
+	printf("%s\n", input_pass);
+	printf("%ld\n", strlen(input_pass));
 
 	while (strlen(input_pass) > 30)
 	{
