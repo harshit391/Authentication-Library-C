@@ -1,7 +1,7 @@
 #include <mongoc/mongoc.h>
 #include <stdio.h>
 #include <bson/bson.h>
-#include "getMongo.h"
+#include "getData.h"
 
 void insertDB(char name[], char password[], char email[]) 
 {
@@ -35,9 +35,7 @@ void insertDB(char name[], char password[], char email[])
     // Connection string from MongoDB Atlas
     char uri_string[130];
 
-    uri_string[129] = '\0';
-
-    getMongoURI(uri_string);
+    getDataFromFile("../database/mongouri.txt", string);
 
     // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
