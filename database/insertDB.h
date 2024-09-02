@@ -70,44 +70,27 @@ void insertDB(char name[], char password[], char email[])
     // Execute find operation
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
-    // Process the result
-    if (mongoc_cursor_next(cursor, &result)) 
+    printf("Adding New User.\n");
+    
+    // Create a new document to insert
+    doc = BCON_NEW(
+        "name", BCON_UTF8(name),
+        "email", BCON_UTF8(email),
+        "password", BCON_UTF8(password)
+    );
+
+    // Insert the document
+    if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
     {
-        // Check if the password field exists in the result document 
-        if (bson_iter_init_find(&iter, result, "password")) 
-        {
-            printf("Existing user found.\n");
-        } 
-        else 
-        {
-            printf("Existing user found, but password field not found.\n");
-        }
+        fprintf(stderr, "Sign Up Failed: %s\n", error.message);
     } 
     else 
     {
-        // No matching document found. Insert a new document
-        printf("Adding New User.\n");
-        
-        // Create a new document to insert
-        doc = BCON_NEW(
-            "name", BCON_UTF8(name),
-            "email", BCON_UTF8(email),
-            "password", BCON_UTF8(password)
-        );
-
-        // Insert the document
-        if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
-        {
-            fprintf(stderr, "Sign Up Failed: %s\n", error.message);
-        } 
-        else 
-        {
-            printf("Sign Up SuccessFull.\n");
-        }
-
-        // Clean up the document
-        bson_destroy(doc);
+        printf("Sign Up SuccessFull.\n");
     }
+
+    // Clean up the document
+    bson_destroy(doc);
 
     // Clean up
     mongoc_cursor_destroy(cursor);

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
+#include <stdbool.h>
 
 /* Lookup  */
 int sc[] = {94, 99, 47, 103, 72, 121, 36, 123, 93, 98, 115, 41, 106, 111, 113, 75, 40, 60, 71, 124, 62, 107, 64, 45, 43, 96, 118, 95, 34, 112, 69, 74, 70, 67, 120, 68, 73, 117, 59, 33, 125, 42, 37, 108, 102, 92, 39, 105, 63, 110, 58, 38, 91, 35, 46, 104, 126, 116, 97, 100, 114, 61, 44, 65, 119, 66, 122, 101, 109};
@@ -22,7 +23,7 @@ char secret[] = "sajneet";
 int arr2[] = {19, 1, 10, 14, 5, 5, 20};
 
 /* Main Decoder Function  */
-void decode(char digest[])
+bool decode(char digest[], char password[])
 {
 	int n = strlen(digest); // Calculate the length of digest
 
@@ -58,7 +59,7 @@ void decode(char digest[])
 
 	decoded[j] = '\0';
 	
-	printf("Decoded Value :- %s\n", decoded); // And Here we got the decoded value
+	return strcmp(decoded, password) == 0; // And Here we got the decoded value
 }
 
 void encode(char password[], char hash[])

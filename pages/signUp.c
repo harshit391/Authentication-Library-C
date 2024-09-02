@@ -131,7 +131,11 @@ int main()
 //	printf("3\n");
 	checkEmail(email);
 
-	userExists(email);
+	if(userExists(email))
+	{
+		printf("User Already Exists\n");
+		exit(1);
+	}
 
 //	printf("4\n");
 
