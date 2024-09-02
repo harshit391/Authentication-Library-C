@@ -1,9 +1,4 @@
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+
 
 size_t getContentLength(char filePath[])
 {

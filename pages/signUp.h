@@ -1,16 +1,3 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../hash/singlaHashing.h"
-#include "../database/getData.h"
-#include "../database/userExists.h"
-#include "../database/insertDB.h"
-#include "../database/generateCode.h"
-#include "../database/sendmail.h"	
-
-#include <errno.h>
-
 void checkInvalidEntry(char val[])
 {
 
@@ -99,21 +86,21 @@ void checkEmail(char mail[])
 
 	while (i < n)
 	{
-		if ( !valid (mail[i]))
+		if ( !valid (mail[i]) && mail[i] != '.')
 		{
-			perror("Invalid Character After .");
+			perror("Invalid Email\n");
 			exit(1);
 		}
 		i++;
 	}
 }
 
-int main()
+void signup()
 {
 	char name[100];
 
-	printf("Enter Your Name :- ");
-	scanf("%[^\n]%*c", name);
+	printf("\nEnter Your Name :- ");
+	scanf("\n%[^\n]%*c", name);
 	
 //	printf("1\n");
 
@@ -161,7 +148,15 @@ int main()
 
 //	printf("9\n");
 
+	if (res != 0)
+	{
+		perror("Error in Sending Mail\n");
+		exit(1);
+	}
+
 	char userinputCode[100];
+
+	printf("\nEnter the Verification Code Sent to Your Email :- \n");
 
 	scanf("%[^\n]%*c", userinputCode);
 
@@ -186,6 +181,4 @@ int main()
 	insertDB(name, password, email);
 
 //	printf("11\n");
-
-	return 0;
 }

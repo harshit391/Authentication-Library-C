@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <string.h>
 
-#include <curl/curl.h> // Main Library for SMTP 
-		       // Curl stand for Client URL Request Library
-		       // Provides various Network Operations
-
-#include <stdlib.h>
-#include <time.h>
 
 // Some Macros for Email Length and Verfiication Code Length
 #define FROM "harshitsingla1761@gmail.com"
@@ -120,8 +112,8 @@ int sendMail(char rec[], char verf_code[])
 		char userName[100];
 		char appPass[100];
 
-		getDataFromFile(userName, "../database/mailuser.txt");
-		getDataFromFile(appPass, "../database/mailpass.txt");
+		getDataFromFile(userName, "database/mailuser.txt");
+		getDataFromFile(appPass, "database/mailpass.txt");
 
 		/* Setting Up Login Credentials for SMTP Server */
 		curl_easy_setopt(curl, CURLOPT_USERNAME, userName); 

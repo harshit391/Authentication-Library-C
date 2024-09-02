@@ -1,4 +1,3 @@
-gcc ./App.c
-./a.out
-rm -rf ./a.out
-
+gcc App.c -o singla-auth $(pkg-config --cflags --libs libmongoc-1.0) -lcurl
+./singla-auth
+rm singla-auth

@@ -1,25 +1,14 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../database/getData.h"
-#include "../hash/singlaHashing.h"
-#include "../database/userExists.h"
-
 #define MAX_SIZE 1000000
 
 extern int errno;
 
-int main()
+void login()
 {
-	printf("Enter Your User Email :- ");
+	printf("\nEnter Your User Email :- ");
 
 	char mail[100];
 
-	scanf("%[^\n]%*c", mail);
+	scanf("\n%[^\n]%*c", mail);
 
 	if (!userExists(mail))
 	{
@@ -45,6 +34,4 @@ int main()
 	}
 
 	printf("Login Successful\n");
-
-	return 0;
 }
