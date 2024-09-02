@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "getData.h"
 
 #include <curl/curl.h> // Main Library for SMTP 
 		       // Curl stand for Client URL Request Library
@@ -13,22 +12,6 @@
 #define FROM "harshitsingla1761@gmail.com"
 #define EMAIL_LEN 256
 #define VER_CODE_LEN 7
-
-// Generate Verification Code
-void generate_verf_code(char *verfcode, int n) 
-{       	
-	// Setting the seed
-	srand(time(NULL));
-    	
-	// Generating random numbers 
-	for (int i = 0; i < n - 1; i++) 
-	{
-    	verfcode[i] = '0' + (rand() % 10);
-    }
-	
-	// Termination the code character array 
-	verfcode[n - 1] = '\0';
-}
 
 // Defines the object which stores the basic values for our email that needs to be send via SMTP
 struct email 
@@ -107,7 +90,7 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
   	return 0;
 }
 
-int sendMail(char rec[])
+int sendMail(char rec[], char verf_code[])
 {
 	// Setting up the CURL Object
   	CURL *curl;
@@ -121,8 +104,8 @@ int sendMail(char rec[])
 	// Declaring our email object
 	struct email curr_email = {0};
 
-	// Generating current verification code
-	generate_verf_code(curr_email.verf_code, VER_CODE_LEN);
+	// Storing current verification code
+	strcpy(curr_email.verf_code, verf_code);
 	
 	// Copying the recipient mail we recieved during runtime to email object recipient
 	strncpy(curr_email.recipient, rec, EMAIL_LEN - 1);
@@ -137,8 +120,8 @@ int sendMail(char rec[])
 		char userName[100];
 		char appPass[100];
 
-		getDataFromFile(userName, "./mailuser.txt");
-		getDataFromFile(appPass, "./mailpass.txt");
+		getDataFromFile(userName, "../database/mailuser.txt");
+		getDataFromFile(appPass, "../database/mailpass.txt");
 
 		/* Setting Up Login Credentials for SMTP Server */
 		curl_easy_setopt(curl, CURLOPT_USERNAME, userName); 

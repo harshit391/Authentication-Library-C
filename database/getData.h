@@ -3,10 +3,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
-size_t getContentLength(const char filePath[])
+size_t getContentLength(char filePath[])
 {
+   
     int fd = open(filePath, O_RDONLY);
+
     if (fd == -1)
     {
         perror("Error opening file");
@@ -47,11 +50,11 @@ size_t getContentLength(const char filePath[])
     return totalLength;
 }
 
-void getDataFromFile(char filedata[], const char filePath[])
+void getDataFromFile(char filedata[], char filePath[])
 {
     size_t contentLength = getContentLength(filePath);
     
-    int fd = open(filePath, O_RDONLY);
+    int fd = open(filePath, O_RDONLY);    
 
     if (fd == -1)
     {

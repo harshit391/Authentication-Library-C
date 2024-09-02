@@ -1,7 +1,7 @@
 #include <mongoc/mongoc.h>
 #include <stdio.h>
 #include <bson/bson.h>
-#include "getData.h"
+#include <limits.h>
 
 void insertDB(char name[], char password[], char email[]) 
 {
@@ -35,7 +35,7 @@ void insertDB(char name[], char password[], char email[])
     // Connection string from MongoDB Atlas
     char uri_string[130];
 
-    getDataFromFile("../database/mongouri.txt", string);
+    getDataFromFile(uri_string, "../database/mongouri.txt");
 
     // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
@@ -76,7 +76,7 @@ void insertDB(char name[], char password[], char email[])
         // Check if the password field exists in the result document 
         if (bson_iter_init_find(&iter, result, "password")) 
         {
-            printf("Existing user found.");
+            printf("Existing user found.\n");
         } 
         else 
         {
@@ -86,24 +86,23 @@ void insertDB(char name[], char password[], char email[])
     else 
     {
         // No matching document found. Insert a new document
-        printf("Inserting new document.\n");
+        printf("Adding New User.\n");
         
         // Create a new document to insert
         doc = BCON_NEW(
             "name", BCON_UTF8(name),
             "email", BCON_UTF8(email),
-            "password", BCON_UTF8(password),
-	    "isVerified", BCON_UTF8("false")
+            "password", BCON_UTF8(password)
         );
 
         // Insert the document
         if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
         {
-            fprintf(stderr, "Insert failed: %s\n", error.message);
+            fprintf(stderr, "Sign Up Failed: %s\n", error.message);
         } 
         else 
         {
-            printf("New document inserted successfully.\n");
+            printf("Sign Up SuccessFull.\n");
         }
 
         // Clean up the document

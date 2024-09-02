@@ -1,7 +1,11 @@
 #include "sendmail.h"
+#include "generateCode.h"
 
 int main()
 {
-	sendMail("balwinderthinda456@gmail.com");
+	char verfcode[100];
+
+	generate_verf_code(verfcode, 7);
+	sendMail("balwinderthinda456@gmail.com", verfcode);
 	return 0;
 }

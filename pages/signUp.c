@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../hash/singlaHashing.h"
+#include "../database/getData.h"
 #include "../database/insertDB.h"
+#include "../database/generateCode.h"
+#include "../database/sendmail.h"	
 #include <errno.h>
 
 void checkInvalidEntry(char val[])
@@ -109,8 +112,12 @@ int main()
 
 	printf("Enter Your Name :- ");
 	scanf("%[^\n]%*c", name);
+	
+//	printf("1\n");
 
 	checkInvalidEntry(name);
+	
+//	printf("2\n");
 
 	printf("\n");
 
@@ -119,15 +126,58 @@ int main()
 	printf("Enter Your Email :- ");
 	scanf("%[^\n]%*c", email);
 
+//	printf("3\n");
 	checkEmail(email);
+
+//	printf("4\n");
 
 	printf("\n");
 
 	char password[100];
+	
+//	printf("5\n");
 
 	enterAndHashPassword(password);
+	
+//	printf("6\n");
 
+	char verf_code[100];
+	
+//	printf("7\n");
+
+	generate_verf_code(verf_code, 7);
+
+//	printf("8\n");
+
+	int res = sendMail(email, verf_code);
+
+//	printf("9\n");
+
+	char userinputCode[100];
+
+	scanf("%[^\n]%*c", userinputCode);
+
+	int tries = 5;
+
+	while (tries && strcmp(userinputCode, verf_code) != 0)
+	{
+		tries--;
+		printf("Verfication Failed Please Enter Correct Code :- \n");
+		scanf("%[^\n]%*c", userinputCode);
+	}
+
+	if (tries <= 0)
+	{
+		printf("You Exceeded the no. of tries.\n");
+		exit(1);
+	}
+	
+	printf("Verfication Successfull\n");
+
+//	printf("10\n");
 	insertDB(name, password, email);
+
+//	printf("11\n");
 
 	return 0;
 }
