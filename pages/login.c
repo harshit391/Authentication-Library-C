@@ -20,7 +20,7 @@ int main()
 
 	scanf("%[^\n]%*c", mail);
 
-	if ( !checkExists( mail ) )
+	if (( mail ) )
 	{
 		perror("User Not Found\n");
 		exit(1);

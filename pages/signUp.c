@@ -4,9 +4,11 @@
 #include <string.h>
 #include "../hash/singlaHashing.h"
 #include "../database/getData.h"
+#include "../database/userExists.h"
 #include "../database/insertDB.h"
 #include "../database/generateCode.h"
 #include "../database/sendmail.h"	
+
 #include <errno.h>
 
 void checkInvalidEntry(char val[])
@@ -128,6 +130,8 @@ int main()
 
 //	printf("3\n");
 	checkEmail(email);
+
+	userExists(email);
 
 //	printf("4\n");
 
