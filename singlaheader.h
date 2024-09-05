@@ -20,6 +20,8 @@
 // cURL Library for sending emails
 #include <curl/curl.h>
 
+#define PATH "/vagrant/Authentication-System-C/"
+
 // Custom Headers
 #include "database/utils/getData.h"
 #include "database/src/userExists.h"

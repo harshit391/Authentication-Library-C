@@ -2,7 +2,7 @@
 
 size_t getContentLength(char filePath[])
 {
-   
+
     int fd = open(filePath, O_RDONLY);
 
     if (fd == -1)
@@ -47,9 +47,15 @@ size_t getContentLength(char filePath[])
 
 void getDataFromFile(char filedata[], char filePath[])
 {
-    size_t contentLength = getContentLength(filePath);
+    char fullPath[1000];
+    fullPath[0] = '\0';
+
+    strcat(fullPath, PATH);
+    strcat(fullPath, filePath);
+
+    size_t contentLength = getContentLength(fullPath);
     
-    int fd = open(filePath, O_RDONLY);    
+    int fd = open(fullPath, O_RDONLY);    
 
     if (fd == -1)
     {
