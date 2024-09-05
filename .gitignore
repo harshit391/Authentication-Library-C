@@ -1,5 +1,2 @@
-*/mongouri.txt
-*/mailuser.txt
-*/mailpass.txt
-*/singlaHashing.c
-*/singlaHashing.h
+database/files
+hash/algo
