@@ -14,8 +14,6 @@ int main(void)
     printf("2. Signup\n");
     printf("3. Exit\n");
 
-    
-
     int val = 0;
 
 
