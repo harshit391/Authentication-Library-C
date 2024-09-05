@@ -30,7 +30,7 @@ void setup(char email[])
     // Initialize the MongoDB driver
     mongoc_init();
 
-    getDataFromFile(uri_string, "database/mongouri.txt");
+    getDataFromFile(uri_string, "database/files/mongouri.txt");
 
      // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
@@ -66,7 +66,7 @@ void setup(char email[])
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 }
 
-int userExists(char email[]) 
+bool userExists(char email[]) 
 {
     // Initialize the MongoDB driver and setup the connection
     setup(email);

@@ -112,8 +112,8 @@ int sendMail(char rec[], char verf_code[])
 		char userName[100];
 		char appPass[100];
 
-		getDataFromFile(userName, "database/mailuser.txt");
-		getDataFromFile(appPass, "database/mailpass.txt");
+		getDataFromFile(userName, "database/files/mailuser.txt");
+		getDataFromFile(appPass, "database/files/mailpass.txt");
 
 		/* Setting Up Login Credentials for SMTP Server */
 		curl_easy_setopt(curl, CURLOPT_USERNAME, userName); 
