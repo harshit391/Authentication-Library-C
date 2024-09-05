@@ -102,15 +102,80 @@ Password is well encrypted by help of a fun type personally designed algorithm n
 - Of course you can change any of them or Like just use whatever already exists
 - To analyze the complexity of brute-forcing the hashing algorithm you've implemented, we need to consider several aspects of the encoding process:
 
-###### Estimated Time Complexity:
+###### Estimated Time Complexity for Brute Force Attack:
+
+*Case 1 :- You changed the my lookups and Reverse Lookups Values Keeping the length same of everything*
 
 The time complexity of a brute-force attack on this encoding function can be estimated as:
 
 \[
+3 * 95^n + 2^{32}
+\] 
+Written as
+\[
 O(95^n)
 \]
 
-where \(n\) is the password length. Even for relatively short passwords (e.g., 8 characters), the complexity is \(95^8\), which is over 6.6 trillion possible combinations.
+
+where \(n\) is the password length.
+
+For short passwords (4-6 characters):
+
+The number of combinations ranges from billions to trillions.(1 Arab to 1 Kharab)
+While still a large number, these could potentially be cracked with significant computing resources, though it would take considerable time.
+
+For medium-length passwords (7-10 characters):
+
+The combinations increase dramatically, reaching quintillions to septillions.
+This level of complexity makes brute force attacks extremely challenging, requiring enormous computing power and time.
+
+For long passwords (11 characters and above):
+
+The number of combinations becomes astronomical, reaching decillions, undecillions, and beyond.
+At this level, brute force attacks become practically impossible with current or foreseeable technology.
+
+It's important to note that for each additional character in the password, the complexity increases by a factor of 95 (assuming all printable ASCII characters). This is then multiplied by the 4 billion possibilities from the 32-bit public key, resulting in an exponential increase in complexity for each added character.
+
+This analysis demonstrates that passwords of 8 characters or more, when hashed with the Singla Algorithm, present an extremely formidable challenge to brute force attacks. The complexity levels quickly reach a point that is difficult to comprehend in human-relatable terms.
+
+*Case 2 :-If you are using my Lookup and Reverse Lookup*
+
+Btw I generated them using a Java Program to have it easy :)
+
+So The Time Complexity will be reduced ( Because My Repo is Public so Attacker can Identify ) to :-
+
+\[
+95^n + 2^{32}
+\]
+Written as
+\[
+O(95^n)
+\]
+
+For short passwords (4-6 characters):
+
+The number of combinations is now in the range of 10^33 to 10^35. (1 decillion to 100 decillion) (1 lakh crore crore to 100 lakh crore crore)
+While significantly reduced from our previous estimate, this is still an enormous number.
+It would take thousands to tens of thousands of years for a supercomputer checking a trillion combinations per second.
+
+For medium-length passwords (7-10 characters):
+
+The combinations increase to the range of 10^36 to 10^39 (1 undecillion to 1 duodecillion) (10 crore crore crore to 1000 crore crore crore) 
+This would take millions to billions of years for our hypothetical supercomputer.
+
+For long passwords (11 characters and above):
+
+The number of combinations reaches 10^40 and beyond (10 duodecillion and beyond) (10 lakh crore crore crore and beyond)
+Even with the known lookup tables, this level of complexity makes brute force attacks practically infeasible with current technology.
+
+The complexity has indeed decreased compared to our previous analysis where all components were unknown. However, it remains extremely high due to several factors:
+
+The password itself still contributes \(95^{n}\) combinations, where n is the password length.
+
+In practical terms, this means that even with knowledge of the lookup tables:
+
+Very short passwords (3-4 characters) might be crackable with significant resources, but it would still be a time-consuming process.
+Passwords of 8 characters or more remain extremely secure against brute force attacks, with complexity levels that would require millions to billions of years to exhaust all possibilities, even with powerful computing resources.
 
 ---
 
@@ -181,43 +246,49 @@ void encode(char input[], char output[])
 
 **6. Decode**
 ```c
-bool decode(char dbpassword[], char userpassword[])
+void decode(char dbpassword[], char output[])
+```
+- It will store the decoded value of hashed value in the output character array
+
+**7. Compare**
+```c
+bool compare(char dbpassword[], char userpassword[])
 ```
 - It will basically provide the Boolean value  as true or false whether the user entered password matches to the data base stored password of that user or not.
 
-**7. Generate Code**
+**8. Generate Code**
 ```c
 void generate_verf_code(char output[], int n)
 ```
 - Take n as a input and generate n - 1 length Random Integer Code and store it in the output array
 
-**8. Get Data From File**
+**9. Get Data From File**
 ```c
 void getDataFromFile(char output[], char filePath[])
 ```
 - To Retrive a String Content from a Text File
 
-**9. Insert User in Data Base**
+**10. Insert User in Data Base**
 ```c
 void insertDB(char name[], char email[], char password[])
 ```
 - If Everything is valid It will insert the Data into Database
 - It is being assumed while using this Function is that You have already validated the Name Email and Password to be non Empty and Correct fields
 
-**10. Send Mail of a Verification Code You Already Generated**
+**11. Send Mail of a Verification Code You Already Generated**
 ```c
 int sendMail(char recipient[], char verficicationCode[])
 ```
 - It will Return 0 if everything is good
 
-**11. Check If User Exists**
+**12. Check If User Exists**
 ```c
-int userExists(char email[])
+bool userExists(char email[])
 ```
 - Return 1 If User Already exists in DataBase
 - Return 0 If User Not Exists
 
-**12. Retrieve Hashed Password from Database of User**
+**13. Retrieve Hashed Password from Database of User**
 ```c
 void getPassword(char email[], char output[], size_t passwordSize)
 ```
