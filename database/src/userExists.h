@@ -25,6 +25,8 @@ bson_iter_t iter;
 // Connection string from MongoDB Atlas
 char uri_string[130];
 
+void getDataFromFile(char arr1[], char arr2[]);
+
 void setup(char email[])
 {
     // Initialize the MongoDB driver

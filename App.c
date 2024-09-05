@@ -1,5 +1,8 @@
 #include "singlaheader.h"
 
+void login();
+void signup();
+
 int main(void)
 {
 
