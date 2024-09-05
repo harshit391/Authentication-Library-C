@@ -2,6 +2,8 @@
 
 extern int errno;
 
+bool compare(char arr1[], char arr2[]);
+
 void login()
 {
 	printf("\nEnter Your User Email :- ");
@@ -26,7 +28,7 @@ void login()
 
 	getPassword(mail, dbPassword, 100);
 		
-	while(!(decode(dbPassword, password)))
+	while(!(compare(dbPassword, password)))
 	{
 		printf("Login Failed because of Wrong Password\n");
 		printf("Enter Your Password Again :- ");

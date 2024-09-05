@@ -1,3 +1,5 @@
+void enterAndHashPassword(char arr[]);
+
 void checkInvalidEntry(char val[])
 {
 
