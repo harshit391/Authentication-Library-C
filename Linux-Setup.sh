@@ -14,6 +14,9 @@ sudo apt-get install libmongoc-dev
 sudo apt-get install libcurl4-openssl-dev
 sudo apt-get install pkg-config
 
+# Setting up the files folders
+mkdir database/files
+
 # Take input for email and saving it as text file in database folder
 echo "Enter your email address: "
 read email
