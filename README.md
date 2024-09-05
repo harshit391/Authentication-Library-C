@@ -296,6 +296,7 @@ void getPassword(char email[], char output[], size_t passwordSize)
 - It will be a hashed Password stored in Output file
 - Password Size you can give like 100 or 50 Doesn't matter because Its Just to Ensure the overflow Condition Doesn't Occur
 
+
 ---
 
 ### Setup Mongo DB
