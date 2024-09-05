@@ -21,11 +21,10 @@
 #include <curl/curl.h>
 
 // Custom Headers
-#include "hash/singlaHashing.h"
-#include "database/getData.h"
-#include "database/userExists.h"
-#include "database/insertDB.h"
-#include "database/generateCode.h"
-#include "database/sendmail.h"
+#include "database/utils/getData.h"
+#include "database/src/userExists.h"
+#include "database/src/insertDB.h"
+#include "database/utils/generateCode.h"
+#include "database/src/sendmail.h"
 #include "pages/login.h"
 #include "pages/signup.h"
