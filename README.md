@@ -1,7 +1,7 @@
 
 # Authentication Library in C
 
-![Intro](./readme/Intro.gif)
+![Intro](./readme/Authentication.png)
 
 An Authentication System library in C that provides a static library for seamless integration into any C program. It includes features like password hashing and user management with MongoDB, allowing users to implement authentication without needing to understand the underlying library details.
 
