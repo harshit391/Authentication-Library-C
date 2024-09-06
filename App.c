@@ -2,6 +2,7 @@
 
 void login();
 void signup();
+void resetPass();
 
 int main(void)
 {
@@ -12,7 +13,8 @@ int main(void)
 
     printf("1. Login\n");
     printf("2. Signup\n");
-    printf("3. Exit\n");
+    printf("3. Reset Password\n");
+    printf("4. Exit\n");
 
     int val = 0;
 
@@ -31,6 +33,10 @@ int main(void)
             signup();
         } 
         else if (val == 3)
+        {
+            resetPass();
+        }
+        else if (val == 4)
         {
             break;
         }
