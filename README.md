@@ -3,7 +3,9 @@
 
 An Authentication System library in C that provides a static library for seamless integration into any C program. It includes features like password hashing and user management with MongoDB, allowing users to implement authentication without needing to understand the underlying library details.
 
-Compatibility - Linux/Unix
+---
+
+#### Compatibility - Linux/Unix Operating System
 
 ---
 
@@ -12,10 +14,12 @@ Compatibility - Linux/Unix
 2. [Pre Requisites](#pre-requisites)
 3. [Libraries Used](#libraries-used)
 4. [Data Base](#data-base)
-5. [Setting Up Project](#setting-up-the-project)
-6. [Using The Library You Created](#what-singhautha-provides-you)
-7. [Setting Up Mongo DB](#setup-mongo-db)
-8. [Final Remarks and Future Scope](#final-remarks-and-future-scope)
+5. [Want to Get a Pre-Built Library](#want-to-use-pre-built-library)
+6. [Setting Up Project](#setting-up-the-project)
+7. [Using The Library You Created](#what-singhautha-provides-you)
+8. [Setting Up Mongo DB](#setup-mongo-db)
+9. [Future Scope](#future-scope)
+10. [Final Remarks](#future-scope)
 
 ---
 
@@ -180,6 +184,14 @@ Passwords of 8 characters or more remain extremely secure against brute force at
 
 ---
 
+### Want to Use Pre-Built Library
+
+- You can use my provided singlaAuth.a
+- The Keys used in this are totally different which are being provided as an example in previous commits
+- Now the used values are more secure
+- Just Compile your Program as Mentioned [Below](#setting-up-the-project)
+
+---
 ### Setting up the Project 
 1. Clone the Repo by 
 ```bash
@@ -205,7 +217,6 @@ gcc file.c -L. singlaAuth.a -o file
 ```
 
 ---
-
 ### What SinghAuth.a Provides you
 
 **1. Login Function**
@@ -352,13 +363,19 @@ mongodb://127.0.0.1:27017/
 
 ---
 
-### Final Remarks and Future Scope
+### Future Scope
 
 - Compatibility With Windows
 - GUI 
-- More Secure Token Generation
+- Token Generation and Authentication
 - Integration with Windows SSO
+
+---
+
+### Final Remarks
 
 I Hope this will help you to have authentication feature in your C Programs with as ease as possible
 
 [Connect on Linked for Feedback](https://www.linkedin.com/in/harshitsingla1761/) 
+
+---
