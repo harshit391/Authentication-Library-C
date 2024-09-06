@@ -6,7 +6,6 @@ void resetPass();
 
 int main(void)
 {
-
     printf("Welcome to the Singla Authentication in C\n\n");
 
     printf("Select One of the Options from Below :- \n\n");
@@ -17,7 +16,6 @@ int main(void)
     printf("4. Exit\n");
 
     int val = 0;
-
 
     while (val == 0) 
     {
