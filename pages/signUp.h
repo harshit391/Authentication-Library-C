@@ -180,7 +180,7 @@ void signup()
 	printf("Verfication Successfull\n");
 
 //	printf("10\n");
-	insertDB(name, password, email);
+	insertUser(name, password, email);
 
 //	printf("11\n");
 }

@@ -30,3 +30,4 @@
 #include "database/src/sendmail.h"
 #include "pages/login.h"
 #include "pages/signup.h"
+#include "pages/reset.h"

@@ -1,36 +1,34 @@
+// Main Client    
+mongoc_client_t *client;
 
+// Collection handle
+mongoc_collection_t *collection;
 
-void insertDB(char name[], char password[], char email[]) 
+// MongoDB URI
+mongoc_uri_t *uri;
+
+// Error handling
+bson_error_t error;
+
+// Query and document objects for MongoDB operations 
+bson_t *query, *doc;
+
+// Cursor for MongoDB operations like Iterator in Data Structures 
+mongoc_cursor_t *cursor;
+
+// Result object for MongoDB operations
+const bson_t *result;
+
+// Iterator object for MongoDB operations
+bson_iter_t iter;
+
+// Connection string from MongoDB Atlas
+char uri_string[130];
+
+void insertDB(char email[]) 
 {
-    // Main Client    
-    mongoc_client_t *client;
-    
-    // Collection handle
-    mongoc_collection_t *collection;
-    
-    // MongoDB URI
-    mongoc_uri_t *uri;
-    
-    // Error handling
-    bson_error_t error;
-    
-    // Query and document objects for MongoDB operations 
-    bson_t *query, *doc;
-    
-    // Cursor for MongoDB operations like Iterator in Data Structures 
-    mongoc_cursor_t *cursor;
-    
-    // Result object for MongoDB operations
-    const bson_t *result;
-    
-    // Iterator object for MongoDB operations
-    bson_iter_t iter;
-
     // Initialize the MongoDB driver
     mongoc_init();
-
-    // Connection string from MongoDB Atlas
-    char uri_string[130];
 
     getDataFromFile(uri_string, "database/files/mongouri.txt");
 
@@ -66,8 +64,12 @@ void insertDB(char name[], char password[], char email[])
 
     // Execute find operation
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
+}
 
-    printf("Adding New User.\n");
+
+void insertUser(char name[], char password[], char email[])
+{
+    insertDB(email);
     
     // Create a new document to insert
     doc = BCON_NEW(
@@ -75,6 +77,8 @@ void insertDB(char name[], char password[], char email[])
         "email", BCON_UTF8(email),
         "password", BCON_UTF8(password)
     );
+
+    printf("Adding New User...\n");
 
     // Insert the document
     if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
@@ -84,6 +88,36 @@ void insertDB(char name[], char password[], char email[])
     else 
     {
         printf("Sign Up SuccessFull.\n");
+    }
+
+    // Clean up the document
+    bson_destroy(doc);
+
+    // Clean up
+    mongoc_cursor_destroy(cursor);
+    bson_destroy(query);
+    mongoc_collection_destroy(collection);
+    mongoc_client_destroy(client);
+    mongoc_uri_destroy(uri);
+    mongoc_cleanup();
+}
+
+void updateUser(char email[], char newPass[])
+{
+    insertDB(email);
+
+    printf("Reseting the Password...\n");
+    
+    bson_t *update = BCON_NEW("$set", "{", "password", BCON_UTF8(newPass),"}");
+
+    // Updating the User with New Password
+    if (!mongoc_collection_update_one(collection, query, update, NULL, NULL, &error))
+    {
+        fprintf(stderr, "Updation in DB Failed ;- %s\n", error.message);
+    }
+    else
+    {
+        printf("Password Reset Success\n");
     }
 
     // Clean up the document
