@@ -3,6 +3,8 @@
 
 An Authentication System library in C that provides a static library for seamless integration into any C program. It includes features like password hashing and user management with MongoDB, allowing users to implement authentication without needing to understand the underlying library details.
 
+Compatibility - Linux/Unix
+
 ---
 
 ## Index 
@@ -13,7 +15,7 @@ An Authentication System library in C that provides a static library for seamles
 5. [Setting Up Project](#setting-up-the-project)
 6. [Using The Library You Created](#what-singhautha-provides-you)
 7. [Setting Up Mongo DB](#setup-mongo-db)
-8. [Final Remarks](#)
+8. [Final Remarks and Future Scope](#final-remarks-and-future-scope)
 
 ---
 
@@ -24,7 +26,6 @@ An Authentication System library in C that provides a static library for seamles
 - **Password Management:** Password encryption using Encoding Algorithms.
 - **Input Validation:** Prevents buffer overflows and other security vulnerabilities.
 - **Scalable Design:** Easy integration into larger systems or applications.
-- **Cross Platform:** The Creation of a Static Library help users to access the authentication even without installing external unix libraries
 
 ***
 
@@ -47,7 +48,7 @@ A Mongo Account whether its of Cloud-Atlas or Its Local Just a Valid Mongo URL d
 ```text
 mongodb://localhost:27017/testdb
 ```
-- For Cloud Instance
+- For Cloud Instance (My Recommendation)
 ```text
 mongodb+srv://username:password@clusterurl/?retryWrites=true&w=majority&appName=insertDB-example
 ```
@@ -275,20 +276,27 @@ void insertDB(char name[], char email[], char password[])
 - If Everything is valid It will insert the Data into Database
 - It is being assumed while using this Function is that You have already validated the Name Email and Password to be non Empty and Correct fields
 
-**11. Send Mail of a Verification Code You Already Generated**
+**11. Update Password of a User in Data Base**
+```c
+void updateUser(char email[], char newPass[])
+```
+- If Everything is valid It will Update the Password Data into Database for User with value of parameter email
+- It is being assumed while using this Function is that You have already validated the Name Email and Password to be non Empty and Correct fields
+
+**12. Send Mail of a Verification Code You Already Generated**
 ```c
 int sendMail(char recipient[], char verficicationCode[])
 ```
 - It will Return 0 if everything is good
 
-**12. Check If User Exists**
+**13. Check If User Exists**
 ```c
 bool userExists(char email[])
 ```
 - Return 1 If User Already exists in DataBase
 - Return 0 If User Not Exists
 
-**13. Retrieve Hashed Password from Database of User**
+**14. Retrieve Hashed Password from Database of User**
 ```c
 void getPassword(char email[], char output[], size_t passwordSize)
 ```
@@ -344,7 +352,12 @@ mongodb://127.0.0.1:27017/
 
 ---
 
-### Final Remarks
+### Final Remarks and Future Scope
+
+- Compatibility With Windows
+- GUI 
+- More Secure Token Generation
+- Integration with Windows SSO
 
 I Hope this will help you to have authentication feature in your C Programs with as ease as possible
 
