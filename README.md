@@ -1,11 +1,14 @@
 
-# Authentication System in C
+# Authentication Library in C
+
+![Intro](./readme/Intro.gif)
 
 An Authentication System library in C that provides a static library for seamless integration into any C program. It includes features like password hashing and user management with MongoDB, allowing users to implement authentication without needing to understand the underlying library details.
 
 ---
 
 #### Compatibility - Linux/Unix Operating System
+![Linux](./readme/linux.jpg)
 
 ---
 
@@ -13,11 +16,12 @@ An Authentication System library in C that provides a static library for seamles
 1. [Key Features](#key-features-of-auth-library-created-by-this-program)
 2. [Pre Requisites](#pre-requisites)
 3. [Libraries Used](#libraries-used)
-4. [Data Base](#data-base)
+4. [Data Base and Hashing Algorithm](#data-base)
 5. [Want to Get a Pre-Built Library](#want-to-use-pre-built-library)
 6. [Setting Up Project](#setting-up-the-project)
 7. [Using The Library You Created](#what-singhautha-provides-you)
 8. [Setting Up Mongo DB](#setup-mongo-db)
+9. [Singla Hashing - Time Complexity for Brute Force Attack](#estimated-time-complexity-for-brute-force-attack-on-singla-hash)
 9. [Future Scope](#future-scope)
 10. [Final Remarks](#future-scope)
 
@@ -27,9 +31,10 @@ An Authentication System library in C that provides a static library for seamles
 
 - **User Registration:** Secure and intuitive process for creating new user accounts.
 - **Login System:** Efficient login mechanism with secure password verification.
-- **Password Management:** Password encryption using Encoding Algorithms.
+- **Password Encryption:** Password encryption using Encoding Algorithms.
 - **Input Validation:** Prevents buffer overflows and other security vulnerabilities.
-- **Scalable Design:** Easy integration into larger systems or applications.
+- **Static Library:** Easy integration into larger systems or applications by creating a static library for whole system
+- **Cloud Database:** Seamlessly connects to a cloud database for storing user information and credentials.
 
 ***
 
@@ -38,7 +43,7 @@ An Authentication System library in C that provides a static library for seamles
 **1. Linux System**  
 The libraries required to make this Auth System work are easily available in Linux, whereas Windows needs quite a process to make those libraries work.
 
-**2. A Gmail Account (Optional)**  
+**2. A Gmail Account**  
 I guess everyone has one Gmail account. This is only required to have an App Password to use your mail account externally.
 
 - Go to [Create App Password](https://myaccount.google.com/apppasswords).
@@ -107,83 +112,7 @@ Password is well encrypted by help of a fun type personally designed algorithm n
 - Of course you can change any of them or Like just use whatever already exists
 - To analyze the complexity of brute-forcing the hashing algorithm you've implemented, we need to consider several aspects of the encoding process:
 
-###### Estimated Time Complexity for Brute Force Attack:
-
-*Case 1 :- You changed the my lookups and Reverse Lookups Values Keeping the length same of everything*
-
-The time complexity of a brute-force attack on this encoding function can be estimated as:
-
-\[
-3 * 95^n + 2^{32}
-\] 
-Written as
-\[
-O(95^n)
-\]
-
-
-where \(n\) is the password length.
-
-For short passwords (4-6 characters):
-
-The number of combinations ranges from billions to trillions.(1 Arab to 1 Kharab)
-While still a large number, these could potentially be cracked with significant computing resources, though it would take considerable time.
-
-For medium-length passwords (7-10 characters):
-
-The combinations increase dramatically, reaching quintillions to septillions.
-This level of complexity makes brute force attacks extremely challenging, requiring enormous computing power and time.
-
-For long passwords (11 characters and above):
-
-The number of combinations becomes astronomical, reaching decillions, undecillions, and beyond.
-At this level, brute force attacks become practically impossible with current or foreseeable technology.
-
-It's important to note that for each additional character in the password, the complexity increases by a factor of 95 (assuming all printable ASCII characters). This is then multiplied by the 4 billion possibilities from the 32-bit public key, resulting in an exponential increase in complexity for each added character.
-
-This analysis demonstrates that passwords of 8 characters or more, when hashed with the Singla Algorithm, present an extremely formidable challenge to brute force attacks. The complexity levels quickly reach a point that is difficult to comprehend in human-relatable terms.
-
-*Case 2 :-If you are using my Lookup and Reverse Lookup*
-
-Btw I generated them using a Java Program to have it easy :)
-
-So The Time Complexity will be reduced ( Because My Repo is Public so Attacker can Identify ) to :-
-
-\[
-95^n + 2^{32}
-\]
-Written as
-\[
-O(95^n)
-\]
-
-For short passwords (4-6 characters):
-
-The number of combinations is now in the range of 10^33 to 10^35. (1 decillion to 100 decillion) (1 lakh crore crore to 100 lakh crore crore)
-While significantly reduced from our previous estimate, this is still an enormous number.
-It would take thousands to tens of thousands of years for a supercomputer checking a trillion combinations per second.
-
-For medium-length passwords (7-10 characters):
-
-The combinations increase to the range of 10^36 to 10^39 (1 undecillion to 1 duodecillion) (10 crore crore crore to 1000 crore crore crore) 
-This would take millions to billions of years for our hypothetical supercomputer.
-
-For long passwords (11 characters and above):
-
-The number of combinations reaches 10^40 and beyond (10 duodecillion and beyond) (10 lakh crore crore crore and beyond)
-Even with the known lookup tables, this level of complexity makes brute force attacks practically infeasible with current technology.
-
-The complexity has indeed decreased compared to our previous analysis where all components were unknown. However, it remains extremely high due to several factors:
-
-The password itself still contributes \(95^{n}\) combinations, where n is the password length.
-
-In practical terms, this means that even with knowledge of the lookup tables:
-
-Very short passwords (3-4 characters) might be crackable with significant resources, but it would still be a time-consuming process.
-Passwords of 8 characters or more remain extremely secure against brute force attacks, with complexity levels that would require millions to billions of years to exhaust all possibilities, even with powerful computing resources.
-
 ---
-
 ### Want to Use Pre-Built Library
 
 - You can use my provided singlaAuth.a
@@ -206,14 +135,14 @@ git clone https://github.com/harshit391/Authentication-System-C.git
 ./Auth-Setup.sh
 ```
 
-4. You will be getting ```SinglaAuth.a``` file and Now Just compile your C Program by simply
+4. You will be getting ```singlaAuth.a``` and ```singlaHash.a``` is already present in hash folder, So Now Just compile your C Program by simply
 ```bash
-gcc file.c -L. singlaAuth.a -o file
+gcc App.c -L. singlaAuth.a hash/singlaHash.a -o singla-auth $(pkg-config --cflags --libs libmongoc-1.0) -lcurl
 ```
 
 5. And Run Your Program by
 ```bash
-./file
+./singla-auth
 ```
 
 ---
@@ -360,6 +289,38 @@ mongodb://127.0.0.1:27017/
 - Now Go To Browse Collections 
 - Delete any sample collection
 - And You are Done Here to Use your Mongo Database
+
+---
+
+### Estimated Time Complexity for Brute Force Attack on Singla Hash:
+
+#### Case 1: General Encoding Function
+
+For a brute-force attack on this encoding function, the time complexity is estimated as:
+
+\[ 3 \times 95^n + 2^{32} \]
+Written as: 
+\[ O(95^n) \]
+
+- **Short Passwords (4-6 characters):** Billions to trillions of combinations (1 Arab to 1 Kharab). Potentially crackable but time-consuming.
+- **Medium-Length Passwords (7-10 characters):** Quintillions to septillions of combinations, making brute-force attacks extremely challenging.
+- **Long Passwords (11+ characters):** Astronomical combinations (decillions and beyond). Brute-force attacks are practically infeasible.
+
+Each additional character increases complexity by a factor of 95, leading to exponential growth in difficulty.
+
+#### Case 2: Using Lookup Tables
+
+With public lookup tables, the time complexity is reduced to:
+
+\[ 95^n + 2^{32} \]
+Written as: 
+\[ O(95^n) \]
+
+- **Short Passwords (4-6 characters):** Ranges from 10^33 to 10^35 combinations (1 decillion to 100 decillion). Still extremely challenging but more feasible.
+- **Medium-Length Passwords (7-10 characters):** Ranges from 10^36 to 10^39 combinations (1 undecillion to 1 duodecillion). Requires millions to billions of years to crack.
+- **Long Passwords (11+ characters):** Over 10^40 combinations (10 duodecillion and beyond). Nearly impossible to crack with current technology.
+
+Even with known lookup tables, passwords of 8 characters or more remain highly secure against brute-force attacks.
 
 ---
 
