@@ -25,7 +25,7 @@ echo "Enter the Full Path from Root Folder of Operating System :- "
 echo "For Example :- /vagrant/Authentication-System-C/ (/ at the end is mandatory)"
 read path
 echo >> singlaheader.h
-echo "#define PATH \"$path"\ >> singlaheader.h
+echo "#define PATH \"$path"\" >> singlaheader.h
 
 echo >> singlaheader.h
 echo "#include \"database/utils/getData.h\"" >> singlaheader.h
@@ -35,15 +35,16 @@ echo "#include \"database/utils/generateCode.h\"" >> singlaheader.h
 echo "#include \"database/src/sendmail.h\"" >> singlaheader.h
 echo "#include \"pages/login.h\"" >> singlaheader.h
 echo "#include \"pages/signup.h\"" >> singlaheader.h
+echo "#include \"pages/reset.h\"" >> singlaheader.h
 
 echo ""
 echo ""
 
 # Take input for email and saving it as text file in database folder
-echo "Enter your email address without @gmail.com at the end: "
+echo "Enter your email address : "
 read email
 echo $email > mailuser.txt
-mv email.txt database/files
+mv mailuser.txt database/files
 
 echo ""
 
@@ -51,7 +52,7 @@ echo ""
 echo "Enter your App Password: "
 read appword
 echo $appword > mailpass.txt
-mv appword.txt database/files
+mv mailpass.txt database/files
 
 echo ""
 

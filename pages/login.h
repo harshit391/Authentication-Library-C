@@ -27,10 +27,18 @@ void login()
 	char dbPassword[100];
 
 	getPassword(mail, dbPassword, 100);
+
+	int tries = 5;
 		
-	while(!(compare(dbPassword, password)))
+	while(tries > 0 && (!(compare(dbPassword, password))))
 	{
-		printf("Login Failed because of Wrong Password\n");
+		tries--;
+		if (tries == 0)
+		{
+			printf("You Exceeded the no. of tries\n");
+			exit(1);
+		}
+		printf("Login Failed because of Wrong Password Tries Left :- %d\n", tries);
 		printf("Enter Your Password Again :- ");
 		scanf("%[^\n]%*c", password);
 	}

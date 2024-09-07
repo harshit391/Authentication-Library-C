@@ -124,13 +124,18 @@ Password is well encrypted by help of a fun type personally designed algorithm n
 ### Setting up the Project 
 1. Clone the Repo by 
 ```bash
-git clone https://github.com/harshit391/Authentication-System-C.git
+git clone https://github.com/harshit391/Authentication-Library-C.git
 ```
+2. Enter the Repository
+```bash
+cd Authentication-Library-C
+```
+
 2. First Run the ```Linux-Setup.sh``` Shell File
 ```bash
 ./Linux-Setup.sh
 ```
-3. Then Run the ```app.sh``` Shell File
+3. Then Run the ```Auth-Setup.sh``` Shell File
 ```bash
 ./Auth-Setup.sh
 ```
@@ -143,6 +148,11 @@ gcc App.c -L. singlaAuth.a hash/singlaHash.a -o singla-auth $(pkg-config --cflag
 5. And Run Your Program by
 ```bash
 ./singla-auth
+```
+
+6. You can also run ```app.sh``` to test the application
+```bash
+./app.sh
 ```
 
 ---

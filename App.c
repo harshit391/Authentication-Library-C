@@ -1,9 +1,5 @@
 #include "singlaheader.h"
 
-void login();
-void signup();
-void resetPass();
-
 int main(void)
 {
     printf("Welcome to the Singla Authentication in C\n\n");
