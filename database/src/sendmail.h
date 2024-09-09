@@ -1,5 +1,3 @@
-
-
 // Some Macros for Email Length and Verfiication Code Length
 #define FROM "harshitsingla1761@gmail.com"
 #define EMAIL_LEN 256
