@@ -98,7 +98,7 @@ A valid MongoDB connection URI pointing to your database. Either:
   ```
 - **Atlas Cloud (recommended):**
   ```
-  mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+  mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
   ```
 
 See the [MongoDB Setup](#mongodb-setup) section for step-by-step instructions.
@@ -147,7 +147,7 @@ docker build -t singla-auth .
 
 # Run interactively with your credentials
 docker run -it \
-  -e MONGO_URI='mongodb+srv://user:pass@cluster.mongodb.net' \
+  -e MONGO_URI='<your-mongodb-uri>' \
   -e MAIL_USER='you@gmail.com' \
   -e MAIL_PASS='your-app-password' \
   singla-auth
@@ -158,7 +158,7 @@ docker run -it \
 ```bash
 # Create a .env file
 cat > .env << 'EOF'
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net
+MONGO_URI=<your-mongodb-uri>
 MAIL_USER=you@gmail.com
 MAIL_PASS=your-app-password
 EOF

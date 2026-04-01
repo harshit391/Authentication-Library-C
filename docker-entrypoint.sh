@@ -7,7 +7,7 @@ if [ -z "$MONGO_URI" ] || [ -z "$MAIL_USER" ] || [ -z "$MAIL_PASS" ]; then
     echo ""
     echo "Usage:"
     echo "  docker run -it \\"
-    echo "    -e MONGO_URI='mongodb+srv://user:pass@cluster.mongodb.net' \\"
+    echo "    -e MONGO_URI='<your-mongodb-uri>' \\"
     echo "    -e MAIL_USER='you@gmail.com' \\"
     echo "    -e MAIL_PASS='your-app-password' \\"
     echo "    singla-auth"
