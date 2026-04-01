@@ -2,4 +2,6 @@ database/files
 hash/algo
 **/test/
 Testing
+.claude
+.vscode
 token

@@ -48,10 +48,7 @@ size_t getContentLength(char filePath[])
 void getDataFromFile(char filedata[], char filePath[])
 {
     char fullPath[1000];
-    fullPath[0] = '\0';
-
-    strcat(fullPath, PATH);
-    strcat(fullPath, filePath);
+    snprintf(fullPath, sizeof(fullPath), "%s%s", PATH, filePath);
 
     size_t contentLength = getContentLength(fullPath);
     

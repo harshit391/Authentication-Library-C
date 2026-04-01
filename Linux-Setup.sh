@@ -34,7 +34,7 @@ echo "#include \"database/src/insertDB.h\"" >> singlaheader.h
 echo "#include \"database/utils/generateCode.h\"" >> singlaheader.h
 echo "#include \"database/src/sendmail.h\"" >> singlaheader.h
 echo "#include \"pages/login.h\"" >> singlaheader.h
-echo "#include \"pages/signup.h\"" >> singlaheader.h
+echo "#include \"pages/signUp.h\"" >> singlaheader.h
 echo "#include \"pages/reset.h\"" >> singlaheader.h
 
 echo ""

@@ -1,0 +1,12 @@
+.git
+.vscode
+.gitignore
+singla-auth
+singlaAuth.a
+*.o
+database/files
+token
+Testing
+**/test/
+README.md
+readme/

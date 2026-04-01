@@ -18,11 +18,21 @@ int main(void)
     printf("4. Exit\n");
 
     int val = 0;
+    char input[32];
 
-    while (val == 0) 
+    while (val == 0)
     {
         printf("Enter Your Choice :- ");
-        scanf("%d", &val);
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+            break;
+        }
+
+        if (sscanf(input, "%d", &val) != 1)
+        {
+            printf("Invalid Choice\n");
+            continue;
+        }
 
         if (val == 1)
         {
@@ -31,7 +41,7 @@ int main(void)
         else if (val == 2)
         {
             signup();
-        } 
+        }
         else if (val == 3)
         {
             resetPass();
@@ -42,7 +52,8 @@ int main(void)
         }
         else
         {
-            printf("Invalid Choice\n");   
+            printf("Invalid Choice\n");
+            val = 0;
         }
     }
 

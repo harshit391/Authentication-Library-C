@@ -102,7 +102,7 @@ void signup()
 	char name[100];
 
 	printf("\nEnter Your Name :- ");
-	scanf("\n%[^\n]%*c", name);
+	scanf("\n%99[^\n]%*c", name);
 	
 //	printf("1\n");
 
@@ -115,7 +115,7 @@ void signup()
 	char email[100];
 
 	printf("Enter Your Email :- ");
-	scanf("%[^\n]%*c", email);
+	scanf("%99[^\n]%*c", email);
 
 //	printf("3\n");
 	checkEmail(email);
@@ -160,7 +160,7 @@ void signup()
 
 	printf("\nEnter the Verification Code Sent to Your Email :- \n");
 
-	scanf("%[^\n]%*c", userinputCode);
+	scanf("%99[^\n]%*c", userinputCode);
 
 	int tries = 5;
 
@@ -168,7 +168,7 @@ void signup()
 	{
 		tries--;
 		printf("Verfication Failed Please Enter Correct Code :- \n");
-		scanf("%[^\n]%*c", userinputCode);
+		scanf("%99[^\n]%*c", userinputCode);
 	}
 
 	if (tries <= 0)

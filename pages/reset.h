@@ -5,7 +5,7 @@ void resetPass()
     char email[100];
 
     printf("\nPlease Enter the email :- ");
-    scanf("\n%[^\n]%*c", email);
+    scanf("\n%99[^\n]%*c", email);
 
     if (!userExists(email))
     {
@@ -28,13 +28,13 @@ void resetPass()
     int tries = 5;
 
     printf("You Have Recieved an Email for Verification Code Please Enter :- ");
-    scanf("%[^\n]%*c", userCode);
+    scanf("%7[^\n]%*c", userCode);
 
     while (tries > 0 && strcmp(userCode, code) != 0)
     {
         printf("Wrong Code, Tries Left %d\n", tries);
         tries--;
-        scanf("%[^\n]%*c", userCode);
+        scanf("%7[^\n]%*c", userCode);
     }
 
     if (tries <= 0)

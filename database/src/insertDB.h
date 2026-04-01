@@ -1,30 +1,3 @@
-// Main Client    
-mongoc_client_t *client;
-
-// Collection handle
-mongoc_collection_t *collection;
-
-// MongoDB URI
-mongoc_uri_t *uri;
-
-// Error handling
-bson_error_t error;
-
-// Query and document objects for MongoDB operations 
-bson_t *query, *doc;
-
-// Cursor for MongoDB operations like Iterator in Data Structures 
-mongoc_cursor_t *cursor;
-
-// Result object for MongoDB operations
-const bson_t *result;
-
-// Iterator object for MongoDB operations
-bson_iter_t iter;
-
-// Connection string from MongoDB Atlas
-char uri_string[130];
-
 void insertDB(char email[]) 
 {
     // Initialize the MongoDB driver
@@ -43,7 +16,6 @@ void insertDB(char email[])
 
     // Set additional connection options
     mongoc_uri_set_option_as_int32(uri, "serverSelectionTimeoutMS", 5000);
-    mongoc_uri_set_option_as_bool(uri, "tlsInsecure", true);  // Only use this for testing!
 
     // Create a new client instance
     client = mongoc_client_new_from_uri(uri);
@@ -120,8 +92,8 @@ void updateUser(char email[], char newPass[])
         printf("Password Reset Success\n");
     }
 
-    // Clean up the document
-    bson_destroy(doc);
+    // Clean up the update document
+    bson_destroy(update);
 
     // Clean up
     mongoc_cursor_destroy(cursor);

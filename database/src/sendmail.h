@@ -1,16 +1,17 @@
 // Some Macros for Email Length and Verfiication Code Length
-#define FROM "harshitsingla1761@gmail.com"
 #define EMAIL_LEN 256
 #define VER_CODE_LEN 7
 
 // Defines the object which stores the basic values for our email that needs to be send via SMTP
-struct email 
+struct email
 {
     int lines_read; // To Calculate the size of data needs to be sent
-			
+
   	char verf_code[VER_CODE_LEN]; // Main Verification Code
 
   	char recipient[EMAIL_LEN]; // To Store Recipient Email
+
+  	char sender[EMAIL_LEN]; // Sender email read from config
 };
 
 // Main Payload of our Email
@@ -37,7 +38,8 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
 				data = buffer;
 				break;
 		case 1:
-				data = "From: " FROM " (Singla Ji)\r\n";
+				snprintf(buffer, sizeof(buffer), "From: %s (Singla Ji)\r\n", curr_email->sender);
+				data = buffer;
 				break;
 		case 2:
 				data = "Subject: Email Verification\r\n";
@@ -94,9 +96,10 @@ int sendMail(char rec[], char verf_code[])
 	// Declaring our email object
 	struct email curr_email = {0};
 
-	// Storing current verification code
-	strcpy(curr_email.verf_code, verf_code);
-	
+	// Storing current verification code (bounded copy)
+	strncpy(curr_email.verf_code, verf_code, VER_CODE_LEN - 1);
+	curr_email.verf_code[VER_CODE_LEN - 1] = '\0';
+
 	// Copying the recipient mail we recieved during runtime to email object recipient
 	strncpy(curr_email.recipient, rec, EMAIL_LEN - 1);
   	curr_email.recipient[EMAIL_LEN - 1] = '\0';
@@ -113,13 +116,17 @@ int sendMail(char rec[], char verf_code[])
 		getDataFromFile(userName, "database/files/mailuser.txt");
 		getDataFromFile(appPass, "database/files/mailpass.txt");
 
+		// Populate the sender field from config
+		strncpy(curr_email.sender, userName, EMAIL_LEN - 1);
+		curr_email.sender[EMAIL_LEN - 1] = '\0';
+
 		/* Setting Up Login Credentials for SMTP Server */
-		curl_easy_setopt(curl, CURLOPT_USERNAME, userName); 
-		curl_easy_setopt(curl, CURLOPT_PASSWORD, appPass); // App Password 
+		curl_easy_setopt(curl, CURLOPT_USERNAME, userName);
+		curl_easy_setopt(curl, CURLOPT_PASSWORD, appPass); // App Password
 		curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587"); // Gmail SMTP server with TLS 587 PORT
 
 		/* Set the sender and receiver */
-		curl_easy_setopt(curl, CURLOPT_MAIL_FROM, FROM);
+		curl_easy_setopt(curl, CURLOPT_MAIL_FROM, userName);
 		recipients = curl_slist_append(recipients, rec);
 		curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 

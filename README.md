@@ -3,350 +3,355 @@
 
 ![Intro](./readme/Authentication.png)
 
-An Authentication System library in C that provides a static library for seamless integration into any C program. It includes features like password hashing and user management with MongoDB, allowing users to implement authentication without needing to understand the underlying library details.
+A static authentication library in C that provides user registration, login, and password reset out of the box. It handles password hashing (custom Singla Hashing algorithm), email verification via Gmail SMTP, and user storage in MongoDB — so you can add authentication to any C program by linking a single `.a` file and calling a few functions.
 
 ---
 
-#### Compatibility - Linux/Unix Operating System
-![Linux](./readme/linux.jpg)
+## Table of Contents
+
+1. [Features](#features)
+2. [Architecture](#architecture)
+3. [Prerequisites](#prerequisites)
+4. [Getting Started](#getting-started)
+   - [Linux (Native)](#linux-native)
+   - [Docker (Any OS)](#docker-any-os)
+5. [API Reference](#api-reference)
+   - [High-Level Functions](#high-level-functions)
+   - [Hashing Functions](#hashing-functions)
+   - [Database Functions](#database-functions)
+   - [Utility Functions](#utility-functions)
+6. [Project Structure](#project-structure)
+7. [MongoDB Setup](#mongodb-setup)
+8. [Security](#security)
+9. [Brute Force Complexity](#brute-force-complexity)
+10. [Future Scope](#future-scope)
 
 ---
 
-## Index 
-1. [Key Features](#key-features-of-auth-library-created-by-this-program)
-2. [Pre Requisites](#pre-requisites)
-3. [Libraries Used](#libraries-used)
-4. [Data Base and Hashing Algorithm](#data-base)
-5. [Want to Get a Pre-Built Library](#want-to-use-pre-built-library)
-6. [Setting Up Project](#setting-up-the-project)
-7. [Using The Library You Created](#what-singhautha-provides-you)
-8. [Setting Up Mongo DB](#setup-mongo-db)
-9. [Singla Hashing - Time Complexity for Brute Force Attack](#estimated-time-complexity-for-brute-force-attack-on-singla-hash)
-9. [Future Scope](#future-scope)
-10. [Final Remarks](#future-scope)
+## Features
+
+- **User Registration** — name, email, and password with email format validation
+- **Login** — password verification with a 5-attempt lockout
+- **Password Reset** — email-verified password change flow
+- **Email Verification** — 6-digit codes sent via Gmail SMTP with TLS
+- **Password Hashing** — custom Singla Hashing algorithm (3 private keys + 1 public key)
+- **MongoDB Storage** — cloud or local, with TLS-secured connections
+- **Static Library** — link `singlaAuth.a` + `singlaHash.a` into any C program
+- **Docker Support** — run on any OS without installing Linux dependencies
 
 ---
 
-### Key Features of Auth Library Created by This Program:
+## Architecture
 
-- **User Registration:** Secure and intuitive process for creating new user accounts.
-- **Login System:** Efficient login mechanism with secure password verification.
-- **Password Encryption:** Password encryption using Encoding Algorithms.
-- **Input Validation:** Prevents buffer overflows and other security vulnerabilities.
-- **Static Library:** Easy integration into larger systems or applications by creating a static library for whole system
-- **Cloud Database:** Seamlessly connects to a cloud database for storing user information and credentials.
-
-***
-
-### Pre Requisites
-
-**1. Linux System**  
-The libraries required to make this Auth System work are easily available in Linux, whereas Windows needs quite a process to make those libraries work.
-
-**2. A Gmail Account**  
-I guess everyone has one Gmail account. This is only required to have an App Password to use your mail account externally.
-
-- Go to [Create App Password](https://myaccount.google.com/apppasswords).
-- Generate an App Password.
-- Take note of it in Notepad or wherever you want.
-
-**3. MongoDB Account**
-A Mongo Account whether its of Cloud-Atlas or Its Local Just a Valid Mongo URL directly pointing towards the collection you need It will look like this
-
-- For Local Instance
-```text
-mongodb://localhost:27017/testdb
 ```
-- For Cloud Instance (My Recommendation)
-```text
-mongodb+srv://username:password@clusterurl/?retryWrites=true&w=majority&appName=insertDB-example
+App.c (CLI Menu)
+ |
+ |-- [1] Login    --> pages/login.h
+ |       |-- userExists()            (MongoDB lookup)
+ |       |-- getPassword()           (retrieve hashed password)
+ |       \-- compare()               (verify via singlaHash.a)
+ |
+ |-- [2] Signup   --> pages/signUp.h
+ |       |-- checkEmail()            (format validation)
+ |       |-- userExists()            (duplicate check)
+ |       |-- enterAndHashPassword()  (hash via singlaHash.a)
+ |       |-- generate_verf_code()    (random 6-digit code)
+ |       |-- sendMail()              (Gmail SMTP)
+ |       \-- insertUser()            (MongoDB insert)
+ |
+ \-- [3] Reset    --> pages/reset.h
+         |-- userExists()
+         |-- generate_verf_code() + sendMail()
+         |-- enterAndHashPassword()
+         \-- updateUser()            (MongoDB update)
 ```
-- Don't Worry You will get the URL from Terminal for Local and Atlas will provide you the url for Cloud Account
 
-- Further You can Use [MongoDB Setup](#setup-mongo-db) Section of this Read Me to Create Mongo DB Account for Local and Cloud
+**Database Schema (MongoDB):**
 
-**3. Setup**
-- Okay So This is the only Requirement because all the libraries that need to be installed are mentioned in         ```Linux-Setup.sh``` File 
-- Just Run the ```Linux-Setup.sh``` file in your linux Terminal by
+```json
+{
+  "name": "string",
+  "email": "string (unique)",
+  "password": "string (Singla-hashed)"
+}
+```
+
+---
+
+## Prerequisites
+
+### 1. Gmail App Password
+
+Required for sending verification emails.
+
+1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
+2. Generate an App Password
+3. Save it — you will need it during setup
+
+### 2. MongoDB
+
+A valid MongoDB connection URI pointing to your database. Either:
+
+- **Local:**
+  ```
+  mongodb://localhost:27017/testdb
+  ```
+- **Atlas Cloud (recommended):**
+  ```
+  mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+  ```
+
+See the [MongoDB Setup](#mongodb-setup) section for step-by-step instructions.
+
+### 3. Linux or Docker
+
+- **Native:** Linux/Unix system (Ubuntu, Debian, etc.)
+- **Any OS:** Docker Desktop (Windows, macOS, Linux)
+
+---
+
+## Getting Started
+
+### Linux (Native)
+
 ```bash
-./Linux-Setup.sh
-```
-- You will be asked for Several Details Which I hope you noted already as I mentioned above
-- It Includes Google Email, App Password and MongoDB URL
-
-**4. Congratualtions**
-- Setup is Complete Now You can Test The Files using Test Files If its working with your credential
-- After You are Satisfied Just Run ``Auth-Setup.sh`` file in your Linux Terminal to Create a Static Library
-```bash
-./Auth-Setup.sh
-```
----
-
-### Libraries Used
-*1. External Libraries*
-- **libmongoc-dev :-** Mongo DB C Driver 
-- **libcurl4-openssl-dev** - Client URL Request Driver for Mail
-- **pkg-config :-** Configuration of Mongo DB C Driver to work without errors
-
-*2. Unix Libraries*
-- **errno.h**
-- **limits.h**
-- **time.h**
-- **fcntl.h**
-- **unistd.h**
-- **sys/stat.h**
-- **sys/time.h**
-
----
-
-### Data Base
-MongoDB is used to store the user databas which includes
-1. Name of the user
-2. Email of the user ( Should be Unique )
-3. Password 
-
-Password is well encrypted by help of a fun type personally designed algorithm named Singla Hashing 
-
-##### Singla Hashing 
-- It uses Mathematical Operations with use of 3 Private Secret Keys and 1 Public Key
-- Of course you can change any of them or Like just use whatever already exists
-- To analyze the complexity of brute-forcing the hashing algorithm you've implemented, we need to consider several aspects of the encoding process:
-
----
-### Want to Use Pre-Built Library
-
-- You can use my provided singlaAuth.a
-- The Keys used in this are totally different which are being provided as an example in previous commits
-- Now the used values are more secure
-- Just Compile your Program as Mentioned [Below](#setting-up-the-project)
-
----
-### Setting up the Project 
-1. Clone the Repo by 
-```bash
+# 1. Clone the repository
 git clone https://github.com/harshit391/Authentication-Library-C.git
-```
-2. Enter the Repository
-```bash
 cd Authentication-Library-C
-```
 
-2. First Run the ```Linux-Setup.sh``` Shell File
-```bash
+# 2. Run the setup script (installs gcc, libmongoc, libcurl, pkg-config)
+#    You will be prompted for: project path, Gmail, App Password, MongoDB URI
 ./Linux-Setup.sh
-```
-3. Then Run the ```Auth-Setup.sh``` Shell File
-```bash
+
+# 3. Build the static library
 ./Auth-Setup.sh
-```
 
-4. You will be getting ```singlaAuth.a``` and ```singlaHash.a``` is already present in hash folder, So Now Just compile your C Program by simply
-```bash
-gcc App.c -L. singlaAuth.a hash/singlaHash.a -o singla-auth $(pkg-config --cflags --libs libmongoc-1.0) -lcurl
-```
-
-5. And Run Your Program by
-```bash
+# 4. Compile and run
+gcc App.c -L. singlaAuth.a hash/singlaHash.a -o singla-auth \
+    $(pkg-config --cflags --libs libmongoc-1.0) -lcurl
 ./singla-auth
-```
 
-6. You can also run ```app.sh``` to test the application
-```bash
+# Or simply:
 ./app.sh
 ```
 
----
-### What SinghAuth.a Provides you
+### Docker (Any OS)
 
-**1. Login Function**
-- The Login Function will be looking like
-```c
-void login()
-```
-- When You call the function It automatically takes User Input for Email and Password and Checks If User is Authenticated
-- It will not return anything as its quite a challenge to perform token authentication in c But You can modify it as your will
+No Linux system required. Docker handles all dependencies.
 
-**2. SignUp Function**
-- The Sign Up Function will look like
-```c
-void signup()
-```
-- When you call the function it automatically takes User Input for Name, Email and Password
-- If You Email is valid you will get Verification Email
-- You get 5 tries to validate the code If failed you have to restart the program
-- After validating everything It will acknowledge that User is saved in you Data Base
+**Using `docker run`:**
 
-**3. Reset Password**
-```c
-void resetPass(char email[])
-```
-- It will send the user a verification Code Email
-- If Valid User He/She can Reset their user Passoword
-
-**4. Create And Hash Password**
-```c
-void enterAndHashPassword(char output[])
-```
-- Automatically Takes Password as input and return the output encoded value in the output array
-
-**5. Encode**
-```c
-void encode(char input[], char output[])
-```
-- Client Provides the Input and It will give the encoded value in the output array
-
-**6. Decode**
-```c
-void decode(char dbpassword[], char output[])
-```
-- It will store the decoded value of hashed value in the output character array
-
-**7. Compare**
-```c
-bool compare(char dbpassword[], char userpassword[])
-```
-- It will basically provide the Boolean value  as true or false whether the user entered password matches to the data base stored password of that user or not.
-
-**8. Generate Code**
-```c
-void generate_verf_code(char output[], int n)
-```
-- Take n as a input and generate n - 1 length Random Integer Code and store it in the output array
-
-**9. Get Data From File**
-```c
-void getDataFromFile(char output[], char filePath[])
-```
-- To Retrive a String Content from a Text File
-
-**10. Insert User in Data Base**
-```c
-void insertDB(char name[], char email[], char password[])
-```
-- If Everything is valid It will insert the Data into Database
-- It is being assumed while using this Function is that You have already validated the Name Email and Password to be non Empty and Correct fields
-
-**11. Update Password of a User in Data Base**
-```c
-void updateUser(char email[], char newPass[])
-```
-- If Everything is valid It will Update the Password Data into Database for User with value of parameter email
-- It is being assumed while using this Function is that You have already validated the Name Email and Password to be non Empty and Correct fields
-
-**12. Send Mail of a Verification Code You Already Generated**
-```c
-int sendMail(char recipient[], char verficicationCode[])
-```
-- It will Return 0 if everything is good
-
-**13. Check If User Exists**
-```c
-bool userExists(char email[])
-```
-- Return 1 If User Already exists in DataBase
-- Return 0 If User Not Exists
-
-**14. Retrieve Hashed Password from Database of User**
-```c
-void getPassword(char email[], char output[], size_t passwordSize)
-```
-- It will Retrieve the password stored for User with Email in Data Base
-- It will be a hashed Password stored in Output file
-- Password Size you can give like 100 or 50 Doesn't matter because Its Just to Ensure the overflow Condition Doesn't Occur
-
-
----
-
-### Setup Mongo DB
-
-**1. In Local**
-- [Dowload MongoDB For Local](https://www.mongodb.com/try/download/community)
-- Add Path in Enviornment Variables
-```text
-C:\Program Files\MongoDB\Server\7.0\bin
-```
-- Plase Replace 7.0 with your Current Version
-- [Download Mongo Shell ( CLI )](https://www.mongodb.com/try/download/shell)
-- Add Path in Environment Variables
-```text
-C:\Program Files\mongosh-2.2.2-win32-x64\bin
-```
-- Just Add the Path where mongosh folder is located
-- Now Open Terminal And Type
 ```bash
-mongosh
+# Build the image
+docker build -t singla-auth .
+
+# Run interactively with your credentials
+docker run -it \
+  -e MONGO_URI='mongodb+srv://user:pass@cluster.mongodb.net' \
+  -e MAIL_USER='you@gmail.com' \
+  -e MAIL_PASS='your-app-password' \
+  singla-auth
 ```
-- It will open the Mongo Shell
-- Copy the Initial URL which looks like
-```text
-mongodb://127.0.0.1:27017/
+
+**Using `docker compose`:**
+
+```bash
+# Create a .env file
+cat > .env << 'EOF'
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net
+MAIL_USER=you@gmail.com
+MAIL_PASS=your-app-password
+EOF
+
+# Build and run
+docker compose run singla-auth
 ```
-- Note it to Use in the Auth Library
 
-**2. In Atlas Cloud**
-- [Create Account Here](https://account.mongodb.com/account/login)
-- Click on Project 0 at Top Left Corner and Click Create New Project
-- Select Free Cluster or Depends on Your Choice and Don't Change Anything
-- You will be given username and Password to access that databse Note it
-- Click on Create Database User
-- Go to Network Access in 1st Point
-- Click on Add IP Address and Tap on Allow Access from Anywhere ( Just for Development Purposes )
-- Close The Tab and Click Choose a Connection Method 
-- Go To Drivers
-- Select C
-- Enable Show password in URL and Make a Note of that URL 
-- Just Click on Done!
-- Now Go To Browse Collections 
-- Delete any sample collection
-- And You are Done Here to Use your Mongo Database
+> **Note:** The pre-compiled `singlaHash.a` targets x86_64 Linux. The Dockerfile is pinned to `linux/amd64` and will run via emulation on ARM machines (e.g., Apple Silicon).
 
 ---
 
-### Estimated Time Complexity for Brute Force Attack on Singla Hash:
+## API Reference
 
-#### Case 1: General Encoding Function
+### High-Level Functions
 
-For a brute-force attack on this encoding function, the time complexity is estimated as:
+These are the main functions most users will need:
 
-\[ 3 \times 95^n + 2^{32} \]
-Written as: 
-\[ O(95^n) \]
+#### `void login()`
 
-- **Short Passwords (4-6 characters):** Billions to trillions of combinations (1 Arab to 1 Kharab). Potentially crackable but time-consuming.
-- **Medium-Length Passwords (7-10 characters):** Quintillions to septillions of combinations, making brute-force attacks extremely challenging.
-- **Long Passwords (11+ characters):** Astronomical combinations (decillions and beyond). Brute-force attacks are practically infeasible.
+Interactive login flow. Prompts for email and password, verifies against the database. Allows 5 password attempts before exiting.
 
-Each additional character increases complexity by a factor of 95, leading to exponential growth in difficulty.
+#### `void signup()`
 
-#### Case 2: Using Lookup Tables
+Interactive registration flow. Prompts for name, email, and password. Validates email format, checks for duplicates, sends a verification code via email, and inserts the user into MongoDB on success.
 
-With public lookup tables, the time complexity is reduced to:
+#### `void resetPass()`
 
-\[ 95^n + 2^{32} \]
-Written as: 
-\[ O(95^n) \]
-
-- **Short Passwords (4-6 characters):** Ranges from 10^33 to 10^35 combinations (1 decillion to 100 decillion). Still extremely challenging but more feasible.
-- **Medium-Length Passwords (7-10 characters):** Ranges from 10^36 to 10^39 combinations (1 undecillion to 1 duodecillion). Requires millions to billions of years to crack.
-- **Long Passwords (11+ characters):** Over 10^40 combinations (10 duodecillion and beyond). Nearly impossible to crack with current technology.
-
-Even with known lookup tables, passwords of 8 characters or more remain highly secure against brute-force attacks.
+Interactive password reset flow. Prompts for email, sends a verification code, and updates the password in MongoDB on successful verification.
 
 ---
 
-### Future Scope
+### Hashing Functions
 
-- Compatibility With Windows
-- GUI 
-- Token Generation and Authentication
-- Integration with Windows SSO
+#### `void enterAndHashPassword(char output[])`
+
+Prompts the user for a password and stores the hashed result in `output`.
+
+#### `void encode(char input[], char output[])`
+
+Hashes `input` and stores the result in `output`.
+
+#### `void decode(char dbpassword[], char output[])`
+
+Decodes a hashed value and stores the result in `output`.
+
+#### `bool compare(char dbpassword[], char userpassword[])`
+
+Returns `true` if the user-entered password matches the stored hashed password.
 
 ---
 
-### Final Remarks
+### Database Functions
 
-I Hope this will help you to have authentication feature in your C Programs with as ease as possible
+#### `void insertUser(char name[], char password[], char email[])`
 
-[Connect on Linked for Feedback](https://www.linkedin.com/in/harshitsingla1761/) 
+Inserts a new user document into MongoDB. Assumes all fields are validated and the password is already hashed.
+
+#### `void updateUser(char email[], char newPass[])`
+
+Updates the password field for the user matching `email`. Assumes `newPass` is already hashed.
+
+#### `bool userExists(char email[])`
+
+Returns `true` if a user with the given email exists in the database.
+
+#### `void getPassword(char email[], char output[], size_t passwordSize)`
+
+Retrieves the hashed password for the user matching `email` and copies it into `output` (up to `passwordSize - 1` bytes).
 
 ---
+
+### Utility Functions
+
+#### `int sendMail(char recipient[], char verificationCode[])`
+
+Sends a verification email to `recipient` containing `verificationCode`. Returns `0` on success.
+
+#### `void generate_verf_code(char output[], int n)`
+
+Generates a random numeric code of length `n - 1` and stores it in `output` (null-terminated).
+
+#### `void getDataFromFile(char output[], char filePath[])`
+
+Reads the contents of a text file at `filePath` into `output`.
+
+---
+
+## Project Structure
+
+```
+Authentication-Library-C/
+|-- App.c                     Main entry point (interactive CLI menu)
+|-- singlaheader.h            Central header (libraries + project includes)
+|-- singlaAuth.a              Pre-built static library
+|-- hash/
+|   \-- singlaHash.a          Pre-compiled hashing library (x86_64)
+|-- pages/
+|   |-- login.h               Login flow
+|   |-- signUp.h              Registration flow with email validation
+|   \-- reset.h               Password reset flow
+|-- database/
+|   |-- src/
+|   |   |-- userExists.h      MongoDB user lookup + password retrieval
+|   |   |-- insertDB.h        MongoDB insert + update operations
+|   |   \-- sendmail.h        Gmail SMTP email sending via cURL
+|   |-- utils/
+|   |   |-- getData.h         File I/O utilities
+|   |   \-- generateCode.h    Random verification code generator
+|   \-- files/                Runtime config (gitignored)
+|       |-- mongouri.txt      MongoDB connection string
+|       |-- mailuser.txt      Gmail address
+|       \-- mailpass.txt      Gmail app password
+|-- Linux-Setup.sh            Dependency installer + credential setup
+|-- Auth-Setup.sh             Static library builder
+|-- app.sh                    Compile + run script
+|-- Dockerfile                Docker build definition
+|-- docker-entrypoint.sh      Docker runtime config from env vars
+|-- docker-compose.yml        Docker Compose service definition
+\-- .dockerignore             Docker build context exclusions
+```
+
+---
+
+## MongoDB Setup
+
+### Local Instance
+
+1. [Download MongoDB Community Server](https://www.mongodb.com/try/download/community)
+2. Add the bin directory to your PATH:
+   ```
+   /usr/bin/mongod   (Linux)
+   ```
+3. [Download MongoDB Shell](https://www.mongodb.com/try/download/shell)
+4. Start the shell:
+   ```bash
+   mongosh
+   ```
+5. Copy the connection URL (default: `mongodb://127.0.0.1:27017/`)
+
+### Atlas Cloud (Recommended)
+
+1. [Create an account](https://account.mongodb.com/account/login)
+2. Create a new project and select the **Free** cluster tier
+3. Create a database user (note the username and password)
+4. Go to **Network Access** and click **Allow Access from Anywhere**
+5. Go to **Connect** > **Drivers** > select **C**
+6. Copy the connection string (enable "Show password" in the URL)
+7. Delete any sample collections in **Browse Collections**
+
+---
+
+## Security
+
+- **Passwords** are never stored in plaintext — always hashed with the Singla Hashing algorithm before database storage
+- **Email verification** uses random 6-digit codes with a 5-attempt limit
+- **TLS encryption** on both MongoDB connections and SMTP email delivery
+- **Bounded input** — all `scanf` calls use field-width specifiers to prevent buffer overflows
+- **Secrets** are stored in gitignored config files (native) or passed via environment variables (Docker) — never baked into the image
+
+---
+
+## Brute Force Complexity
+
+The Singla Hashing algorithm uses mathematical operations with 3 private secret keys and 1 public key.
+
+### General Encoding
+
+Time complexity for brute force: **O(95^n)**
+
+| Password Length | Combinations     | Feasibility                  |
+|-----------------|------------------|------------------------------|
+| 4-6 characters  | ~10^8 to ~10^12  | Time-consuming but possible  |
+| 7-10 characters | ~10^14 to ~10^20 | Extremely challenging        |
+| 11+ characters  | 10^22+           | Practically infeasible       |
+
+### With Known Lookup Tables
+
+Reduced to **O(95^n)** with a smaller constant factor, but passwords of 8+ characters still require millions to billions of years to crack with current hardware.
+
+Each additional character increases difficulty by a factor of 95.
+
+---
+
+## Future Scope
+
+- Token generation and session authentication
+- GUI interface
+- Integration with system-level SSO
+- Support for additional database backends
+
+---
+
+## Connect
+
+[Harshit Singla on LinkedIn](https://www.linkedin.com/in/harshitsingla1761/)

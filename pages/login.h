@@ -1,7 +1,5 @@
 #define MAX_SIZE 1000000
 
-extern int errno;
-
 bool compare(char arr1[], char arr2[]);
 
 void login()
@@ -10,7 +8,7 @@ void login()
 
 	char mail[100];
 
-	scanf("\n%[^\n]%*c", mail);
+	scanf("\n%99[^\n]%*c", mail);
 
 	if (!userExists(mail))
 	{
@@ -22,7 +20,7 @@ void login()
 
 	char password[100];
 	
-	scanf("%[^\n]%*c", password);
+	scanf("%99[^\n]%*c", password);
 
 	char dbPassword[100];
 
@@ -40,7 +38,7 @@ void login()
 		}
 		printf("Login Failed because of Wrong Password Tries Left :- %d\n", tries);
 		printf("Enter Your Password Again :- ");
-		scanf("%[^\n]%*c", password);
+		scanf("%99[^\n]%*c", password);
 	}
 
 	printf("Login Successful\n");

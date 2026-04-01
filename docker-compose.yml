@@ -1,0 +1,10 @@
+services:
+  singla-auth:
+    build: .
+    platform: linux/amd64
+    stdin_open: true   # -i: keep stdin open for interactive CLI
+    tty: true          # -t: allocate a pseudo-TTY
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASS=${MAIL_PASS}

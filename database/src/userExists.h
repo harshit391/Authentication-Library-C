@@ -45,7 +45,6 @@ void setup(char email[])
 
     // Set additional connection options
     mongoc_uri_set_option_as_int32(uri, "serverSelectionTimeoutMS", 5000);
-    mongoc_uri_set_option_as_bool(uri, "tlsInsecure", true);  // Only use this for testing!
 
     // Create a new client instance
     client = mongoc_client_new_from_uri(uri);
@@ -74,14 +73,7 @@ bool userExists(char email[])
     setup(email);
 
     // Process the result if email exists in the database
-    if (mongoc_cursor_next(cursor, &result)) 
-    {
-        // User found
-        return 1;
-    }
-
-    // Clean up the document
-    bson_destroy(doc);
+    bool found = mongoc_cursor_next(cursor, &result) ? true : false;
 
     // Clean up
     mongoc_cursor_destroy(cursor);
@@ -91,32 +83,32 @@ bool userExists(char email[])
     mongoc_uri_destroy(uri);
     mongoc_cleanup();
 
-    // User not found
-    return 0;
+    return found;
 }
 
 void getPassword(char email[], char password[], size_t password_size)
 {
     setup(email);
 
-    // Process the result if email exists in the database
-    bson_iter_t iter;
-
-    if (bson_iter_init_find(&iter, result, "password")) 
+    // Advance the cursor to get the result document
+    if (mongoc_cursor_next(cursor, &result))
     {
-        if (BSON_ITER_HOLDS_UTF8(&iter)) 
+        // Process the result if email exists in the database
+        bson_iter_t iter;
+
+        if (bson_iter_init_find(&iter, result, "password"))
         {
-            const char *db_password = bson_iter_utf8(&iter, NULL);
+            if (BSON_ITER_HOLDS_UTF8(&iter))
+            {
+                const char *db_password = bson_iter_utf8(&iter, NULL);
 
-            // Use the provided size to safely copy the password
-            strncpy(password, db_password, password_size - 1);
+                // Use the provided size to safely copy the password
+                strncpy(password, db_password, password_size - 1);
 
-            password[password_size - 1] = '\0'; // Null-terminate the string
+                password[password_size - 1] = '\0'; // Null-terminate the string
+            }
         }
     }
-
-    // Clean up the document
-    bson_destroy(doc);
 
     // Clean up
     mongoc_cursor_destroy(cursor);
