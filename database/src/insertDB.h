@@ -1,17 +1,14 @@
-void insertDB(char email[]) 
+bool connectDB(char email[])
 {
-    // Initialize the MongoDB driver
-    mongoc_init();
-
-    getDataFromFile(uri_string, "database/files/mongouri.txt");
+    getDataFromFile(uri_string, "database/files/mongouri.txt", sizeof(uri_string));
 
     // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
-    
-    // Check for errors in URI creation 
+
+    // Check for errors in URI creation
     if (!uri) {
         fprintf(stderr, "Failed to parse URI: %s\n", error.message);
-        return;
+        return false;
     }
 
     // Set additional connection options
@@ -19,30 +16,33 @@ void insertDB(char email[])
 
     // Create a new client instance
     client = mongoc_client_new_from_uri(uri);
-    
+
     // Check for errors in client creation
-    if (!client) 
+    if (!client)
     {
         fprintf(stderr, "Failed to create client\n");
         mongoc_uri_destroy(uri);
-        return;
+        return false;
     }
 
     // Get a handle on the database "testdb" and collection "testcollection"
     collection = mongoc_client_get_collection(client, "testdb", "testcollection");
 
-    // Create query document
+    // Create query document for matching the user by email
     query = BCON_NEW("email", BCON_UTF8(email));
 
-    // Execute find operation
-    cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
+    return true;
 }
 
 
 void insertUser(char name[], char password[], char email[])
 {
-    insertDB(email);
-    
+    if (!connectDB(email))
+    {
+        fprintf(stderr, "Sign Up Failed: Database connection error\n");
+        return;
+    }
+
     // Create a new document to insert
     doc = BCON_NEW(
         "name", BCON_UTF8(name),
@@ -53,39 +53,41 @@ void insertUser(char name[], char password[], char email[])
     printf("Adding New User...\n");
 
     // Insert the document
-    if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) 
+    if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error))
     {
         fprintf(stderr, "Sign Up Failed: %s\n", error.message);
-    } 
-    else 
+    }
+    else
     {
-        printf("Sign Up SuccessFull.\n");
+        printf("Sign Up Successful.\n");
     }
 
     // Clean up the document
     bson_destroy(doc);
 
     // Clean up
-    mongoc_cursor_destroy(cursor);
     bson_destroy(query);
     mongoc_collection_destroy(collection);
     mongoc_client_destroy(client);
     mongoc_uri_destroy(uri);
-    mongoc_cleanup();
 }
 
 void updateUser(char email[], char newPass[])
 {
-    insertDB(email);
+    if (!connectDB(email))
+    {
+        fprintf(stderr, "Password Reset Failed: Database connection error\n");
+        return;
+    }
 
-    printf("Reseting the Password...\n");
-    
+    printf("Resetting the Password...\n");
+
     bson_t *update = BCON_NEW("$set", "{", "password", BCON_UTF8(newPass),"}");
 
     // Updating the User with New Password
     if (!mongoc_collection_update_one(collection, query, update, NULL, NULL, &error))
     {
-        fprintf(stderr, "Updation in DB Failed ;- %s\n", error.message);
+        fprintf(stderr, "Database update failed: %s\n", error.message);
     }
     else
     {
@@ -96,10 +98,8 @@ void updateUser(char email[], char newPass[])
     bson_destroy(update);
 
     // Clean up
-    mongoc_cursor_destroy(cursor);
     bson_destroy(query);
     mongoc_collection_destroy(collection);
     mongoc_client_destroy(client);
     mongoc_uri_destroy(uri);
-    mongoc_cleanup();
 }

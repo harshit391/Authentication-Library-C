@@ -1,4 +1,4 @@
-// Main Client    
+// Main Client
 mongoc_client_t *client;
 
 // Collection handle
@@ -10,10 +10,10 @@ mongoc_uri_t *uri;
 // Error handling
 bson_error_t error;
 
-// Query and document objects for MongoDB operations 
+// Query and document objects for MongoDB operations
 bson_t *query, *doc;
 
-// Cursor for MongoDB operations like Iterator in Data Structures 
+// Cursor for MongoDB operations like Iterator in Data Structures
 mongoc_cursor_t *cursor;
 
 // Result object for MongoDB operations
@@ -23,24 +23,21 @@ const bson_t *result;
 bson_iter_t iter;
 
 // Connection string from MongoDB Atlas
-char uri_string[130];
+char uri_string[1024];
 
-void getDataFromFile(char arr1[], char arr2[]);
+void getDataFromFile(char arr1[], char arr2[], size_t arr1_size);
 
-void setup(char email[])
+bool setup(char email[])
 {
-    // Initialize the MongoDB driver
-    mongoc_init();
+    getDataFromFile(uri_string, "database/files/mongouri.txt", sizeof(uri_string));
 
-    getDataFromFile(uri_string, "database/files/mongouri.txt");
-
-     // Create a MongoDB URI object with options
+    // Create a MongoDB URI object with options
     uri = mongoc_uri_new_with_error(uri_string, &error);
-    
-    // Check for errors in URI creation 
+
+    // Check for errors in URI creation
     if (!uri) {
         fprintf(stderr, "Failed to parse URI: %s\n", error.message);
-        return;
+        return false;
     }
 
     // Set additional connection options
@@ -48,13 +45,13 @@ void setup(char email[])
 
     // Create a new client instance
     client = mongoc_client_new_from_uri(uri);
-    
+
     // Check for errors in client creation
-    if (!client) 
+    if (!client)
     {
         fprintf(stderr, "Failed to create client\n");
         mongoc_uri_destroy(uri);
-        return;
+        return false;
     }
 
     // Get a handle on the database "testdb" and collection "testcollection"
@@ -65,12 +62,18 @@ void setup(char email[])
 
     // Execute find operation
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
+
+    return true;
 }
 
-bool userExists(char email[]) 
+bool userExists(char email[])
 {
     // Initialize the MongoDB driver and setup the connection
-    setup(email);
+    if (!setup(email))
+    {
+        fprintf(stderr, "Database connection failed\n");
+        return false;
+    }
 
     // Process the result if email exists in the database
     bool found = mongoc_cursor_next(cursor, &result) ? true : false;
@@ -81,14 +84,22 @@ bool userExists(char email[])
     mongoc_collection_destroy(collection);
     mongoc_client_destroy(client);
     mongoc_uri_destroy(uri);
-    mongoc_cleanup();
 
     return found;
 }
 
-void getPassword(char email[], char password[], size_t password_size)
+bool getPassword(char email[], char password[], size_t password_size)
 {
-    setup(email);
+    // Initialize password to empty string
+    password[0] = '\0';
+
+    if (!setup(email))
+    {
+        fprintf(stderr, "Database connection failed\n");
+        return false;
+    }
+
+    bool found = false;
 
     // Advance the cursor to get the result document
     if (mongoc_cursor_next(cursor, &result))
@@ -106,6 +117,7 @@ void getPassword(char email[], char password[], size_t password_size)
                 strncpy(password, db_password, password_size - 1);
 
                 password[password_size - 1] = '\0'; // Null-terminate the string
+                found = true;
             }
         }
     }
@@ -116,6 +128,6 @@ void getPassword(char email[], char password[], size_t password_size)
     mongoc_collection_destroy(collection);
     mongoc_client_destroy(client);
     mongoc_uri_destroy(uri);
-    mongoc_cleanup();
-}
 
+    return found;
+}

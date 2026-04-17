@@ -1,58 +1,27 @@
 
 
-size_t getContentLength(char filePath[])
-{
-
-    int fd = open(filePath, O_RDONLY);
-
-    if (fd == -1)
-    {
-        perror("Error opening file");
-        exit(1);
-    }
-
-    char buffer[4096];
-
-    ssize_t bytesRead;
-    
-    size_t totalLength = 0;
-
-    while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0)
-    {
-        for (ssize_t i = 0; i < bytesRead; i++)
-        {
-            if (buffer[i] != '\0')
-            {
-                totalLength++;
-            }
-            else
-            {
-                close(fd);
-                return totalLength;
-            }
-        }
-    }
-
-    if (bytesRead == -1)
-    {
-        perror("Error reading file");
-        close(fd);
-        exit(1);
-    }
-
-    close(fd);
-
-    return totalLength;
-}
-
-void getDataFromFile(char filedata[], char filePath[])
+void getDataFromFile(char filedata[], char filePath[], size_t filedata_size)
 {
     char fullPath[1000];
     snprintf(fullPath, sizeof(fullPath), "%s%s", PATH, filePath);
 
-    size_t contentLength = getContentLength(fullPath);
-    
-    int fd = open(fullPath, O_RDONLY);    
+    // Use stat() to get file size instead of reading the file twice
+    struct stat st;
+    if (stat(fullPath, &st) == -1)
+    {
+        perror("Error getting file info");
+        exit(1);
+    }
+
+    size_t contentLength = (size_t)st.st_size;
+
+    // Clamp to output buffer size to prevent overflow
+    if (contentLength >= filedata_size)
+    {
+        contentLength = filedata_size - 1;
+    }
+
+    int fd = open(fullPath, O_RDONLY);
 
     if (fd == -1)
     {
@@ -70,6 +39,14 @@ void getDataFromFile(char filedata[], char filePath[])
     }
 
     filedata[bytesRead] = '\0';
+
+    // Strip trailing newline/whitespace that config files may have
+    while (bytesRead > 0 && (filedata[bytesRead - 1] == '\n' ||
+           filedata[bytesRead - 1] == '\r' || filedata[bytesRead - 1] == ' '))
+    {
+        bytesRead--;
+        filedata[bytesRead] = '\0';
+    }
 
     close(fd);
 }

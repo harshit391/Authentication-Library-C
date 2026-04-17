@@ -5,7 +5,7 @@ void checkInvalidEntry(char val[])
 
 	if (strlen(val) == 0)
 	{
-		perror("Empty Value");
+		fprintf(stderr, "Empty Value\n");
 		exit(1);
 	}
 }
@@ -24,18 +24,18 @@ void checkEmail(char mail[])
 
 	if ( strlen( mail ) == 0 )
 	{
-		perror("Empty Value");
+		fprintf(stderr, "Empty Value\n");
 		exit(1);
 	}
 
 	else if ( !valid( mail[0] ))
 	{
-		perror("Email Can't start with Special Character");
+		fprintf(stderr, "Email can't start with a special character\n");
 		exit(1);
 	}
 
 	int n = strlen(mail);
-	
+
 	int i = 1;
 
 	int afound = 0;
@@ -53,16 +53,16 @@ void checkEmail(char mail[])
 
 	if (!afound)
 	{
-		perror("Invalid Email");
+		fprintf(stderr, "Invalid Email\n");
 		exit(1);
 	}
-	
+
 	if ( !valid(mail[i]))
 	{
-		perror("Invalid Character After @");
+		fprintf(stderr, "Invalid character after @\n");
 		exit(1);
-	} 
-	else 
+	}
+	else
 	{
 		i++;
 	}
@@ -82,7 +82,7 @@ void checkEmail(char mail[])
 
 	if (!dotfound)
 	{
-		perror("Can't able to find . before the last character");
+		fprintf(stderr, "Cannot find '.' in domain part of email\n");
 		exit(1);
 	}
 
@@ -90,7 +90,7 @@ void checkEmail(char mail[])
 	{
 		if ( !valid (mail[i]) && mail[i] != '.')
 		{
-			perror("Invalid Email\n");
+			fprintf(stderr, "Invalid Email\n");
 			exit(1);
 		}
 		i++;
@@ -103,12 +103,8 @@ void signup()
 
 	printf("\nEnter Your Name :- ");
 	scanf("\n%99[^\n]%*c", name);
-	
-//	printf("1\n");
 
 	checkInvalidEntry(name);
-	
-//	printf("2\n");
 
 	printf("\n");
 
@@ -117,7 +113,6 @@ void signup()
 	printf("Enter Your Email :- ");
 	scanf("%99[^\n]%*c", email);
 
-//	printf("3\n");
 	checkEmail(email);
 
 	if(userExists(email))
@@ -126,61 +121,50 @@ void signup()
 		exit(1);
 	}
 
-//	printf("4\n");
-
 	printf("\n");
 
 	char password[100];
-	
-//	printf("5\n");
 
 	enterAndHashPassword(password);
-	
-//	printf("6\n");
 
 	char verf_code[100];
-	
-//	printf("7\n");
 
 	generate_verf_code(verf_code, 7);
 
-//	printf("8\n");
-
 	int res = sendMail(email, verf_code);
-
-//	printf("9\n");
 
 	if (res != 0)
 	{
-		perror("Error in Sending Mail\n");
+		fprintf(stderr, "Error in Sending Mail\n");
 		exit(1);
 	}
 
 	char userinputCode[100];
+	int tries = 5;
 
 	printf("\nEnter the Verification Code Sent to Your Email :- \n");
 
-	scanf("%99[^\n]%*c", userinputCode);
-
-	int tries = 5;
-
-	while (tries && strcmp(userinputCode, verf_code) != 0)
+	while (tries > 0)
 	{
-		tries--;
-		printf("Verfication Failed Please Enter Correct Code :- \n");
 		scanf("%99[^\n]%*c", userinputCode);
+
+		if (strcmp(userinputCode, verf_code) == 0)
+		{
+			break;
+		}
+
+		tries--;
+
+		if (tries == 0)
+		{
+			printf("You Exceeded the no. of tries.\n");
+			exit(1);
+		}
+
+		printf("Verification Failed. Please Enter Correct Code. Tries Left :- %d\n", tries);
 	}
 
-	if (tries <= 0)
-	{
-		printf("You Exceeded the no. of tries.\n");
-		exit(1);
-	}
-	
-	printf("Verfication Successfull\n");
+	printf("Verification Successful\n");
 
-//	printf("10\n");
 	insertUser(name, password, email);
-
-//	printf("11\n");
 }

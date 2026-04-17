@@ -8,6 +8,9 @@ void resetPass();
 
 int main(void)
 {
+    // Initialize the MongoDB driver once at startup
+    mongoc_init();
+
     printf("Welcome to the Singla Authentication in C\n\n");
 
     printf("Select One of the Options from Below :- \n\n");
@@ -56,6 +59,9 @@ int main(void)
             val = 0;
         }
     }
+
+    // Clean up the MongoDB driver once at shutdown
+    mongoc_cleanup();
 
     return 0;
 }

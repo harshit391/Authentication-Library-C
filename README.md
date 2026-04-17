@@ -1,43 +1,54 @@
 
 # Authentication Library in C
 
-![Intro](./readme/Authentication.png)
+![Architecture](./readme/Authentication.png)
 
-A static authentication library in C that provides user registration, login, and password reset out of the box. It handles password hashing (custom Singla Hashing algorithm), email verification via Gmail SMTP, and user storage in MongoDB — so you can add authentication to any C program by linking a single `.a` file and calling a few functions.
+A static authentication library in C that provides **user registration**, **login**, and **password reset** out of the box. It handles password hashing (custom Singla Hashing algorithm), email verification via Gmail SMTP, and user storage in MongoDB — link a single `.a` file and call a few functions to add authentication to any C program.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Docker-lightgrey)](#getting-started)
+[![Language](https://img.shields.io/badge/Language-C-blue)](#)
+[![Database](https://img.shields.io/badge/Database-MongoDB-green)](#mongodb-setup)
 
 ---
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Architecture](#architecture)
-3. [Prerequisites](#prerequisites)
-4. [Getting Started](#getting-started)
-   - [Linux (Native)](#linux-native)
-   - [Docker (Any OS)](#docker-any-os)
-5. [API Reference](#api-reference)
-   - [High-Level Functions](#high-level-functions)
-   - [Hashing Functions](#hashing-functions)
-   - [Database Functions](#database-functions)
-   - [Utility Functions](#utility-functions)
-6. [Project Structure](#project-structure)
-7. [MongoDB Setup](#mongodb-setup)
-8. [Security](#security)
-9. [Brute Force Complexity](#brute-force-complexity)
-10. [Future Scope](#future-scope)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Linux (Native)](#linux-native)
+  - [Docker (Any OS)](#docker-any-os)
+- [API Reference](#api-reference)
+  - [High-Level Functions](#high-level-functions)
+  - [Hashing Functions](#hashing-functions)
+  - [Database Functions](#database-functions)
+  - [Utility Functions](#utility-functions)
+- [Project Structure](#project-structure)
+- [MongoDB Setup](#mongodb-setup)
+- [Security](#security)
+- [Brute Force Complexity](#brute-force-complexity)
+- [Future Scope](#future-scope)
+- [Contributing](#contributing)
+- [Connect](#connect)
+- [License](#license)
 
 ---
 
 ## Features
 
-- **User Registration** — name, email, and password with email format validation
-- **Login** — password verification with a 5-attempt lockout
-- **Password Reset** — email-verified password change flow
-- **Email Verification** — 6-digit codes sent via Gmail SMTP with TLS
-- **Password Hashing** — custom Singla Hashing algorithm (3 private keys + 1 public key)
-- **MongoDB Storage** — cloud or local, with TLS-secured connections
-- **Static Library** — link `singlaAuth.a` + `singlaHash.a` into any C program
-- **Docker Support** — run on any OS without installing Linux dependencies
+| Feature | Description |
+|---------|-------------|
+| **User Registration** | Name, email, and password with email format validation |
+| **Login** | Password verification with a 5-attempt lockout |
+| **Password Reset** | Email-verified password change flow |
+| **Email Verification** | 6-digit codes sent via Gmail SMTP over TLS |
+| **Password Hashing** | Custom Singla Hashing algorithm (3 private keys + 1 public key) |
+| **MongoDB Storage** | Cloud (Atlas) or local, with TLS-secured connections |
+| **Static Library** | Link `singlaAuth.a` + `singlaHash.a` into any C program |
+| **Docker Support** | Run on any OS without installing native dependencies |
+| **Secure Randomness** | Verification codes generated via `/dev/urandom` |
 
 ---
 
@@ -85,12 +96,12 @@ App.c (CLI Menu)
 Required for sending verification emails.
 
 1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
-2. Generate an App Password
-3. Save it — you will need it during setup
+2. Generate an App Password for "Mail"
+3. Save the 16-character password — you will need it during setup
 
 ### 2. MongoDB
 
-A valid MongoDB connection URI pointing to your database. Either:
+A valid MongoDB connection URI. Either:
 
 - **Local:**
   ```
@@ -105,8 +116,10 @@ See the [MongoDB Setup](#mongodb-setup) section for step-by-step instructions.
 
 ### 3. Linux or Docker
 
-- **Native:** Linux/Unix system (Ubuntu, Debian, etc.)
-- **Any OS:** Docker Desktop (Windows, macOS, Linux)
+| Method | Requirement |
+|--------|-------------|
+| **Native** | Linux/Unix system (Ubuntu, Debian, etc.) |
+| **Docker** | Docker Desktop on Windows, macOS, or Linux |
 
 ---
 
@@ -121,23 +134,29 @@ cd Authentication-Library-C
 
 # 2. Run the setup script (installs gcc, libmongoc, libcurl, pkg-config)
 #    You will be prompted for: project path, Gmail, App Password, MongoDB URI
+chmod +x Linux-Setup.sh
 ./Linux-Setup.sh
 
 # 3. Build the static library
+chmod +x Auth-Setup.sh
 ./Auth-Setup.sh
 
 # 4. Compile and run
+chmod +x app.sh
+./app.sh
+```
+
+**Or compile manually:**
+
+```bash
 gcc App.c -L. singlaAuth.a hash/singlaHash.a -o singla-auth \
     $(pkg-config --cflags --libs libmongoc-1.0) -lcurl
 ./singla-auth
-
-# Or simply:
-./app.sh
 ```
 
 ### Docker (Any OS)
 
-No Linux system required. Docker handles all dependencies.
+No native Linux system required. Docker handles all dependencies.
 
 **Using `docker run`:**
 
@@ -156,7 +175,7 @@ docker run -it \
 **Using `docker compose`:**
 
 ```bash
-# Create a .env file
+# Create a .env file with your credentials
 cat > .env << 'EOF'
 MONGO_URI=<your-mongodb-uri>
 MAIL_USER=you@gmail.com
@@ -175,75 +194,37 @@ docker compose run singla-auth
 
 ### High-Level Functions
 
-These are the main functions most users will need:
-
-#### `void login()`
-
-Interactive login flow. Prompts for email and password, verifies against the database. Allows 5 password attempts before exiting.
-
-#### `void signup()`
-
-Interactive registration flow. Prompts for name, email, and password. Validates email format, checks for duplicates, sends a verification code via email, and inserts the user into MongoDB on success.
-
-#### `void resetPass()`
-
-Interactive password reset flow. Prompts for email, sends a verification code, and updates the password in MongoDB on successful verification.
-
----
+| Function | Description |
+|----------|-------------|
+| `void login()` | Interactive login flow. Prompts for email and password, verifies against database. Allows 5 password attempts before exiting. |
+| `void signup()` | Interactive registration flow. Validates email, checks for duplicates, sends verification code, and inserts user into MongoDB. |
+| `void resetPass()` | Interactive password reset. Verifies email, sends verification code, and updates the password in MongoDB. |
 
 ### Hashing Functions
 
-#### `void enterAndHashPassword(char output[])`
-
-Prompts the user for a password and stores the hashed result in `output`.
-
-#### `void encode(char input[], char output[])`
-
-Hashes `input` and stores the result in `output`.
-
-#### `void decode(char dbpassword[], char output[])`
-
-Decodes a hashed value and stores the result in `output`.
-
-#### `bool compare(char dbpassword[], char userpassword[])`
-
-Returns `true` if the user-entered password matches the stored hashed password.
-
----
+| Function | Description |
+|----------|-------------|
+| `void enterAndHashPassword(char output[])` | Prompts for a password and stores the hashed result in `output`. |
+| `void encode(char input[], char output[])` | Hashes `input` and stores the result in `output`. |
+| `void decode(char dbpassword[], char output[])` | Decodes a hashed value and stores the result in `output`. |
+| `bool compare(char dbpassword[], char userpassword[])` | Returns `true` if the user-entered password matches the stored hash. |
 
 ### Database Functions
 
-#### `void insertUser(char name[], char password[], char email[])`
-
-Inserts a new user document into MongoDB. Assumes all fields are validated and the password is already hashed.
-
-#### `void updateUser(char email[], char newPass[])`
-
-Updates the password field for the user matching `email`. Assumes `newPass` is already hashed.
-
-#### `bool userExists(char email[])`
-
-Returns `true` if a user with the given email exists in the database.
-
-#### `void getPassword(char email[], char output[], size_t passwordSize)`
-
-Retrieves the hashed password for the user matching `email` and copies it into `output` (up to `passwordSize - 1` bytes).
-
----
+| Function | Description |
+|----------|-------------|
+| `void insertUser(char name[], char password[], char email[])` | Inserts a new user document into MongoDB. Assumes password is already hashed. |
+| `void updateUser(char email[], char newPass[])` | Updates the password for the user matching `email`. Assumes `newPass` is already hashed. |
+| `bool userExists(char email[])` | Returns `true` if a user with the given email exists in the database. |
+| `bool getPassword(char email[], char output[], size_t size)` | Retrieves the hashed password for the user matching `email`. Returns `true` on success. |
 
 ### Utility Functions
 
-#### `int sendMail(char recipient[], char verificationCode[])`
-
-Sends a verification email to `recipient` containing `verificationCode`. Returns `0` on success.
-
-#### `void generate_verf_code(char output[], int n)`
-
-Generates a random numeric code of length `n - 1` and stores it in `output` (null-terminated).
-
-#### `void getDataFromFile(char output[], char filePath[])`
-
-Reads the contents of a text file at `filePath` into `output`.
+| Function | Description |
+|----------|-------------|
+| `int sendMail(char recipient[], char code[])` | Sends a verification email via Gmail SMTP. Returns `0` on success. |
+| `void generate_verf_code(char output[], int n)` | Generates a random numeric code of length `n - 1` using `/dev/urandom`. |
+| `void getDataFromFile(char output[], char path[], size_t size)` | Reads a config file into `output`, bounded by `size`. |
 
 ---
 
@@ -251,34 +232,38 @@ Reads the contents of a text file at `filePath` into `output`.
 
 ```
 Authentication-Library-C/
-|-- App.c                     Main entry point (interactive CLI menu)
-|-- singlaheader.h            Central header (libraries + project includes)
-|-- singlaAuth.a              Pre-built static library
-|-- hash/
-|   \-- singlaHash.a          Pre-compiled hashing library (x86_64)
-|-- pages/
-|   |-- login.h               Login flow
-|   |-- signUp.h              Registration flow with email validation
-|   \-- reset.h               Password reset flow
-|-- database/
-|   |-- src/
-|   |   |-- userExists.h      MongoDB user lookup + password retrieval
-|   |   |-- insertDB.h        MongoDB insert + update operations
-|   |   \-- sendmail.h        Gmail SMTP email sending via cURL
-|   |-- utils/
-|   |   |-- getData.h         File I/O utilities
-|   |   \-- generateCode.h    Random verification code generator
-|   \-- files/                Runtime config (gitignored)
-|       |-- mongouri.txt      MongoDB connection string
-|       |-- mailuser.txt      Gmail address
-|       \-- mailpass.txt      Gmail app password
-|-- Linux-Setup.sh            Dependency installer + credential setup
-|-- Auth-Setup.sh             Static library builder
-|-- app.sh                    Compile + run script
-|-- Dockerfile                Docker build definition
-|-- docker-entrypoint.sh      Docker runtime config from env vars
-|-- docker-compose.yml        Docker Compose service definition
-\-- .dockerignore             Docker build context exclusions
+├── App.c                          Main entry point (interactive CLI menu)
+├── singlaheader.h                 Central header (libraries + project includes)
+├── singlaAuth.a                   Pre-built static library
+│
+├── hash/
+│   └── singlaHash.a               Pre-compiled hashing library (x86_64)
+│
+├── pages/
+│   ├── login.h                    Login flow with 5-attempt lockout
+│   ├── signUp.h                   Registration flow with email verification
+│   └── reset.h                    Password reset flow
+│
+├── database/
+│   ├── src/
+│   │   ├── userExists.h           MongoDB user lookup + password retrieval
+│   │   ├── insertDB.h             MongoDB insert + update operations
+│   │   └── sendmail.h             Gmail SMTP email sending via cURL
+│   ├── utils/
+│   │   ├── getData.h              File I/O utilities
+│   │   └── generateCode.h         Secure random verification code generator
+│   └── files/                     Runtime config (gitignored)
+│       ├── mongouri.txt           MongoDB connection string
+│       ├── mailuser.txt           Gmail address
+│       └── mailpass.txt           Gmail app password
+│
+├── Linux-Setup.sh                 Dependency installer + credential setup
+├── Auth-Setup.sh                  Static library builder
+├── app.sh                         Compile + run script
+├── Dockerfile                     Docker build definition (linux/amd64)
+├── docker-entrypoint.sh           Docker runtime config from env vars
+├── docker-compose.yml             Docker Compose service definition
+└── .dockerignore                  Docker build context exclusions
 ```
 
 ---
@@ -288,36 +273,38 @@ Authentication-Library-C/
 ### Local Instance
 
 1. [Download MongoDB Community Server](https://www.mongodb.com/try/download/community)
-2. Add the bin directory to your PATH:
-   ```
-   /usr/bin/mongod   (Linux)
-   ```
-3. [Download MongoDB Shell](https://www.mongodb.com/try/download/shell)
-4. Start the shell:
+2. Add the bin directory to your PATH
+3. Start MongoDB:
    ```bash
-   mongosh
+   mongod --dbpath /data/db
    ```
-5. Copy the connection URL (default: `mongodb://127.0.0.1:27017/`)
+4. Use the connection URI: `mongodb://localhost:27017/testdb`
 
 ### Atlas Cloud (Recommended)
 
-1. [Create an account](https://account.mongodb.com/account/login)
-2. Create a new project and select the **Free** cluster tier
+1. [Create a free account](https://account.mongodb.com/account/login)
+2. Create a new project and select the **Free** cluster tier (M0)
 3. Create a database user (note the username and password)
-4. Go to **Network Access** and click **Allow Access from Anywhere**
+4. Go to **Network Access** > **Allow Access from Anywhere** (or add your IP)
 5. Go to **Connect** > **Drivers** > select **C**
-6. Copy the connection string (enable "Show password" in the URL)
-7. Delete any sample collections in **Browse Collections**
+6. Copy the connection string and replace `<password>` with your database user password
+7. Delete any sample collections in **Browse Collections** (optional)
 
 ---
 
 ## Security
 
-- **Passwords** are never stored in plaintext — always hashed with the Singla Hashing algorithm before database storage
-- **Email verification** uses random 6-digit codes with a 5-attempt limit
-- **TLS encryption** on both MongoDB connections and SMTP email delivery
-- **Bounded input** — all `scanf` calls use field-width specifiers to prevent buffer overflows
-- **Secrets** are stored in gitignored config files (native) or passed via environment variables (Docker) — never baked into the image
+| Area | Implementation |
+|------|----------------|
+| **Password Storage** | Hashed with Singla Hashing algorithm — never stored in plaintext |
+| **Verification Codes** | Generated from `/dev/urandom` for cryptographic randomness |
+| **Email Delivery** | Gmail SMTP over TLS (port 587) with SSL certificate verification |
+| **Database Connections** | TLS-secured MongoDB connections with 5-second timeout |
+| **Input Handling** | All `scanf` calls use field-width specifiers to prevent buffer overflows |
+| **Buffer Safety** | All file reads bounded by output buffer size |
+| **Credential Storage** | Config files set to mode `600`; Docker uses environment variables |
+| **Error Handling** | Database functions return success/failure; callers verify before proceeding |
+| **Brute Force Protection** | 5-attempt limit on login, signup verification, and password reset |
 
 ---
 
@@ -325,9 +312,7 @@ Authentication-Library-C/
 
 The Singla Hashing algorithm uses mathematical operations with 3 private secret keys and 1 public key.
 
-### General Encoding
-
-Time complexity for brute force: **O(95^n)**
+**Time complexity:** O(95^n) where n is the password length.
 
 | Password Length | Combinations     | Feasibility                  |
 |-----------------|------------------|------------------------------|
@@ -335,23 +320,42 @@ Time complexity for brute force: **O(95^n)**
 | 7-10 characters | ~10^14 to ~10^20 | Extremely challenging        |
 | 11+ characters  | 10^22+           | Practically infeasible       |
 
-### With Known Lookup Tables
-
-Reduced to **O(95^n)** with a smaller constant factor, but passwords of 8+ characters still require millions to billions of years to crack with current hardware.
-
-Each additional character increases difficulty by a factor of 95.
+Each additional character increases difficulty by a factor of 95 (printable ASCII).
 
 ---
 
 ## Future Scope
 
-- Token generation and session authentication
+- Token-based session authentication (JWT)
 - GUI interface
 - Integration with system-level SSO
-- Support for additional database backends
+- Support for additional database backends (PostgreSQL, SQLite)
+- Multi-factor authentication (TOTP)
+- Account lockout with timed cooldown
+- Logging and audit trail
+
+---
+
+## Contributing
+
+Contributions are welcome. To get started:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "Add your feature"`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
 
 ---
 
 ## Connect
 
-[Harshit Singla on LinkedIn](https://www.linkedin.com/in/harshitsingla1761/)
+**Harshit Singla** - [LinkedIn](https://www.linkedin.com/in/harshitsingla1761/) - harshitsingla1761@gmail.com
+
+Project Link: [https://github.com/harshit391/Authentication-Library-C](https://github.com/harshit391/Authentication-Library-C)
+
+---
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.

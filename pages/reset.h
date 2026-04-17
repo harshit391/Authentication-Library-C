@@ -9,38 +9,47 @@ void resetPass()
 
     if (!userExists(email))
     {
-        perror("User Not Found");
+        fprintf(stderr, "User Not Found\n");
         exit(1);
     }
 
     printf("Sending Verification Code ...\n");
 
     char code[8];
-    code[0] = '\0';
 
     generate_verf_code(code, 7);
 
-    sendMail(email, code);
+    int res = sendMail(email, code);
 
-    char userCode[8];
-    userCode[0] = '\0';
-
-    int tries = 5;
-
-    printf("You Have Recieved an Email for Verification Code Please Enter :- ");
-    scanf("%7[^\n]%*c", userCode);
-
-    while (tries > 0 && strcmp(userCode, code) != 0)
+    if (res != 0)
     {
-        printf("Wrong Code, Tries Left %d\n", tries);
-        tries--;
-        scanf("%7[^\n]%*c", userCode);
+        fprintf(stderr, "Error in Sending Mail\n");
+        exit(1);
     }
 
-    if (tries <= 0)
+    char userCode[8];
+    int tries = 5;
+
+    printf("You Have Received an Email for Verification Code. Please Enter :- ");
+
+    while (tries > 0)
     {
-        printf("You Exceeded the No. of Tries Please Try Again After some time\n");
-        exit(1);
+        scanf("%7[^\n]%*c", userCode);
+
+        if (strcmp(userCode, code) == 0)
+        {
+            break;
+        }
+
+        tries--;
+
+        if (tries == 0)
+        {
+            printf("You Exceeded the No. of Tries. Please Try Again After some time\n");
+            exit(1);
+        }
+
+        printf("Wrong Code. Tries Left :- %d\n", tries);
     }
 
     printf("Please Enter the New Password\n");
@@ -51,5 +60,5 @@ void resetPass()
 
     updateUser(email, newPass);
 
-    printf("Password Reset SuccessFull, You can Login Again :)\n");
+    printf("Password Reset Successful, You can Login Again :)\n");
 }

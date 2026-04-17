@@ -1,13 +1,13 @@
-// Some Macros for Email Length and Verfiication Code Length
+// Some Macros for Email Length and Verification Code Length
 #define EMAIL_LEN 256
 #define VER_CODE_LEN 7
 
-// Defines the object which stores the basic values for our email that needs to be send via SMTP
+// Defines the object which stores the basic values for our email that needs to be sent via SMTP
 struct email
 {
     int lines_read; // To Calculate the size of data needs to be sent
 
-  	char verf_code[VER_CODE_LEN]; // Main Verification Code
+  	char verf_code[VER_CODE_LEN + 2]; // Main Verification Code + \r\n
 
   	char recipient[EMAIL_LEN]; // To Store Recipient Email
 
@@ -20,12 +20,12 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
   	struct email *curr_email = (struct email *) userp; // Setting up the email
 
   	const char *data; // Setting up the curr email data
- 	
-	char buffer[512]; // Used it to store curr recipient email address 
 
-	// Checking for Empty values 
-	
-  	if ((size == 0) || (nmemb == 0) || ((size*nmemb) < 1)) 
+	char buffer[512]; // Used it to store curr recipient email address
+
+	// Checking for Empty values
+
+  	if ((size == 0) || (nmemb == 0) || ((size*nmemb) < 1))
 	{
     	return 0;
   	}
@@ -66,17 +66,17 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
 				data = NULL;
 				break;
     }
-	
+
 	// If we are able to setup data successfully for email
- 	if (data) 
+ 	if (data)
  	{
 		size_t len = strlen(data); // Then we calculate the length of data we made
 
 		memcpy(ptr, data, len); // Copying the data to the main source declared in send Mail function
-    		
-		curr_email->lines_read++; // Updating the email lines 
-    		
-		return len; 
+
+		curr_email->lines_read++; // Updating the email lines
+
+		return len;
   	}
 
   	return 0;
@@ -89,32 +89,31 @@ int sendMail(char rec[], char verf_code[])
 
 	// To Keep checking the response we are getting from CURL
   	CURLcode res = CURLE_OK;
-  
+
 	// Declaring recipients
 	struct curl_slist *recipients = NULL;
-  	
+
 	// Declaring our email object
 	struct email curr_email = {0};
 
-	// Storing current verification code (bounded copy)
-	strncpy(curr_email.verf_code, verf_code, VER_CODE_LEN - 1);
-	curr_email.verf_code[VER_CODE_LEN - 1] = '\0';
+	// Storing current verification code with \r\n for proper email formatting
+	snprintf(curr_email.verf_code, sizeof(curr_email.verf_code), "%s\r\n", verf_code);
 
-	// Copying the recipient mail we recieved during runtime to email object recipient
+	// Copying the recipient mail we received during runtime to email object recipient
 	strncpy(curr_email.recipient, rec, EMAIL_LEN - 1);
   	curr_email.recipient[EMAIL_LEN - 1] = '\0';
 
-	// Initiliazing the CURL now
+	// Initializing the CURL now
   	curl = curl_easy_init();
-  
-	// If we are able to setup CURL 
+
+	// If we are able to setup CURL
 	if (curl)
 	{
-		char userName[100];
-		char appPass[100];
+		char userName[256];
+		char appPass[256];
 
-		getDataFromFile(userName, "database/files/mailuser.txt");
-		getDataFromFile(appPass, "database/files/mailpass.txt");
+		getDataFromFile(userName, "database/files/mailuser.txt", sizeof(userName));
+		getDataFromFile(appPass, "database/files/mailpass.txt", sizeof(appPass));
 
 		// Populate the sender field from config
 		strncpy(curr_email.sender, userName, EMAIL_LEN - 1);
@@ -140,14 +139,11 @@ int sendMail(char rec[], char verf_code[])
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); // Verify SSL certificates
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L); // Verify the hostname
 
-		/* Increase verbosity */
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-
 		/* Send the message */
 		res = curl_easy_perform(curl);
 
 		/* Check for errors */
-		if (res != CURLE_OK) 
+		if (res != CURLE_OK)
 		{
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 		}
@@ -156,11 +152,10 @@ int sendMail(char rec[], char verf_code[])
 			printf("Email sent successfully.\n");
 		}
 
-		/* Clearnup at the end */
+		/* Cleanup at the end */
 		curl_slist_free_all(recipients);
 		curl_easy_cleanup(curl);
 	}
 
   	return (int)res;
 }
-
